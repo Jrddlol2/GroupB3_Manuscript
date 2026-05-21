@@ -98,6 +98,39 @@ Unlike the continuous perturbations above, a bus breakdown is a \textit{discrete
 \subsection{MARL Architecture and MDP Formulation}
 This subsection builds the formal learning framework in two steps. It first introduces the Bellman recursion that underlies value-based reinforcement learning, then specifies the Markov game tuple, the per-agent observation and action spaces, the reward-function design space, and the proposed learning algorithm. The justification for choosing a multi-agent formulation over a single-agent alternative is presented in Chapter~2.
 
+\subsubsection{Notation and Parameter Definitions}
+
+Table~\ref{tab:notation} consolidates the symbols, state variables, and control
+parameters used throughout this chapter. All values are either defined in this
+study or adopted from the cited source.
+
+\begin{table}[htbp]
+\centering
+\caption{Notation and parameters used in the MDP formulation and environment.}
+\label{tab:notation}
+\small
+\begin{tabular}{p{0.14\textwidth} p{0.52\textwidth} p{0.24\textwidth}}
+\hline
+\textbf{Symbol} & \textbf{Definition} & \textbf{Value / Source} \\
+\hline
+$N$ & Number of bus agents operating on the corridor & Fleet-size dependent \\
+$S,\ A$ & Joint state and action spaces of the Markov game & \cite{Littman1994} \\
+$s_{i,t}$ & Local observation of agent $i$ at control event $t$ & Sec.~3.3.6 \\
+$a_{i,t}$ & Action of agent $i$: holding strength and skip decision & Sec.~3.3.7 \\
+$h_i,\ h_{i+1}$ & Forward and backward headway: time gaps to the bus ahead and behind & AVL feed \cite{Wangsun} \\
+Dwell time & Interval a bus is stationary at a stop serving passengers, from doors opening to doors closing, exclusive of controller-imposed holding & Operational data \\
+$\alpha_{i,t}$ & Holding-strength parameter; $\alpha=0$ means no holding & $\{0.0,0.1,0.2,0.3,0.4\}$ \cite{Rodriguez2023Cooperative} \\
+$\Delta T$ & Maximum holding duration; $\alpha_{i,t}\,\Delta T$ yields seconds held & Implementation phase \\
+$H_0$ & Desired (scheduled) headway & Operational data \\
+$\eta$ & Weather disturbance intensity, equal to the travel-time CV (Eq.~\ref{eq:cv_eta}) & $\{0.0,0.3,0.6,1.0,1.3\}$ \cite{Patil2025Conformal} \\
+$\sigma_d,\ \sigma_s$ & Demand and traffic-speed scaling standard deviations & \cite{Wangsun} \\
+$\gamma,\ \beta$ & Discount factor and event-based discount rate & \cite{Bellman1957,Bradtke1995} \\
+$Q^*(s,a)$ & Optimal state-action value function (Eq.~\ref{eq:bellman}) & \cite{Bellman1957} \\
+$CV$ & Headway coefficient of variation; primary regularity metric & Response variable \\
+\hline
+\end{tabular}
+\end{table}
+
 \subsubsection{Bellman Foundation}
 At the core of any reinforcement learning method is the dynamic programming principle established by Bellman~\cite{Bellman1957}. The agent's objective is not to minimize immediate reward but to maximize the expected sum of discounted future rewards. The state-action value function $Q^\pi(s,a)$, which denotes the expected return from taking action $a$ in state $s$ and following policy $\pi$ thereafter, satisfies the Bellman optimality equation:
 \begin{equation}
@@ -117,6 +150,19 @@ Following Littman~\cite{Littman1994}, the bus fleet control problem is formulate
     \item $\gamma \in [0, 1)$: discount factor.
 \end{itemize}
 Because bus control is asynchronous and event-driven, agents act only upon arrival at a control stop. The formulation maintains a per-agent local transition $P_i : S_i \times A_i \rightarrow S_i$, with $S_i$ the local observation of agent $i$ \cite{Wangsun,Rodriguez2023Cooperative}.
+
+
+A central concern in applying learning-based scheduling is that a policy must
+translate an observed disturbance into a concrete operational response, not
+merely a prediction. In this formulation, the agent's response to any disturbance
+is a control action drawn from the action space $A_i$: a bus that is running hot
+relative to its neighbors holds (Sec.~3.3.7), and a bus that is severely delayed
+and near capacity skips its next stop to recover headway (Sec.~3.3.7). The
+response to a discrete failure is handled the same way --- when a bus breaks down,
+the agent controlling the upstream bus executes a forced stop-skipping action
+(Sec.~3.3.5), keeping the operational response attributable to a still-active
+agent. Every disturbance the environment injects therefore maps onto an explicit,
+executable action rather than a passive forecast.
 
 \subsubsection{Agents ($N$)}
 The decision-making agents are the individual bus units $i \in N$ operating along the corridor. To avoid combinatorial blow-up and to keep the system invariant to fleet size, all agents share a single neural-network policy under a \textbf{parameter-sharing} architecture and act decentrally on their own local observations at deployment \cite{Wangsun,Rodriguez2023Cooperative,Christianos2021PS}. Parameter sharing means that one network's weights serve every bus; each bus computes its own action from its own observation, but learning updates from any bus improve the policy for all of them.
