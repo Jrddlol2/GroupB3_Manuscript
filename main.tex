@@ -1,0 +1,216 @@
+\RequirePackage{fix-cm}
+\documentclass[a4paper, twoside]{report}
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{caption}
+\usepackage{lipsum}
+\usepackage{mathtools}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{rotating}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{array}
+\usepackage{url}
+\usepackage{blindtext}
+\usepackage{comment}
+\includeonly
+%usepackage{hyperref}
+
+\makeatletter
+\newcount\SOUL@minus %% <- without this line the page number would be reset to 0
+\makeatother
+
+%\usepackage{fancyhdr}
+
+
+% ------------------------------------------------------------------------------------------
+% FORMATTING
+
+\usepackage[compact]{titlesec}
+\titlespacing{\section}{0pt}{2ex}{2ex}
+\titlespacing{\subsection}{0pt}{1ex}{1ex}
+\titlespacing{\subsubsection}{0pt}{0.5ex}{1ex}
+
+\titleformat{\section}
+  {\normalfont\fontsize{18}{40}\bfseries}{\thesection}{1em}{}
+  
+%% Sets page size and margins
+\usepackage[a4paper,top=2.8cm,bottom=2.8cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage[colorlinks=true, allcolors=black]{hyperref}
+
+% ------------------------------------------------------------------------------------------
+
+% \usepackage[compact]{titlesec}
+% \titlespacing{\section}{12pt}{0pt}{0pt}
+% \titlespacing{\subsection}{12pt}{0pt}{0pt}
+% \titlespacing{\subsubsection}{12pt}{0pt}{0pt}
+
+% \titleformat{\section}
+%   {\normalfont\fontsize{12}{24}\bfseries}{\thesection}{24pt}{\doublespacing}
+
+% % Redefine the formatting for \subsubsection
+% \titleformat{\subsubsection}[runin]{\normalfont\itshape}{\thesubsubsection}{1em}{}[:]
+
+% \titleformat{\chapter}[display]
+%   {\normalfont\fontsize{12}{12}\bfseries\centering} % Adjust the font size and line spacing as desired
+%   {\chaptertitlename\ \thechapter}
+%   {12pt} % Adjust the horizontal space between "Chapter #" and the title
+%   {}
+
+% %% Sets page size and margins
+% \usepackage[letter,top=2.8cm,bottom=2.8cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% %% Useful packages
+% \usepackage{amsmath}
+% \usepackage{graphicx}
+% \usepackage[colorlinks=true, allcolors=black]{hyperref}
+
+
+
+
+% ------------------------------------------------------------------------------------------
+%% Making a list of acronyms
+
+\usepackage{acro}
+\usepackage[acronym]{glossaries}
+\makeglossaries 
+
+% ------------------------------------------------------------------------------------------
+%% Making a list of acronyms
+\usepackage{acro}
+\usepackage[acronym]{glossaries}
+\makeglossaries
+
+% Make your acronym list here:
+
+\newacronym{ad}{AD}{Alzheimer's Disease} % The argument in the first pair of braces is the reference label, the second is the abbreviation in the text, and the third is the full meaning of the abbreviation.
+\newacronym{who}{WHO}{World Health Organization} 
+
+
+% ------------------------------------------------------------------------------------------
+% NOTE: Use this section for the temporary manuscript only
+%             Omit this section when printing the final, revised manuscript
+%             You should also remove the line: "\linenumbers" below 
+%             (before "\input{introduction.tex}")
+
+% Line Numbering on the left side
+\usepackage[left]{lineno}
+% ------------------------------------------------------------------------------------------
+
+
+% ------------------------------- TITLE ---------------------------------------
+
+% MODIFY THIS SECTION
+
+\title{An Evaluation of Multi-Agent Reinforcement Learning for Dynamic Bus Scheduling Under Non-Ideal Conditions}
+
+% Update names of proponents and supervisor in title.tex
+
+% --------------------------------------------------------------------------------
+
+
+% ----------------------------------------------------------------------------------
+% THIS IS THE BEGINNING OF THE MANUSCRIPT PROPER
+% ----------------------------------------------------------------------------------
+
+\begin{document}
+\input{title.tex} % Putting the title page
+
+% ------------------------------- ABSTRACT ---------------------------------
+
+% MODIFY THIS SECTION
+\begin{comment}
+\section*{Abstract} \large 
+The abstract provides a concise summary of the project, highlighting its key objectives, methodologies, findings, and implications. It serves as a brief yet comprehensive overview, enabling readers to quickly grasp the essence of the work and its significance. (1) Include a brief introduction outlining the purpose and scope of the project. (2)Summarize the main objectives or research questions addressed in the project. (3) Describe the methodologies or approaches employed to investigate the objectives or address the research questions. (4) Highlight the key findings, results, or outcomes obtained through the research or project activities. (5) Discuss the implications, significance, or potential applications of the findings or outcomes in relevant fields or contexts. (6) Conclude with a statement emphasizing the contribution of the project to the existing body of knowledge and its relevance to stakeholders or interested parties.
+
+[Optional: Include keywords or phrases relevant to the subject matter of the document/project for indexing and searchability purposes.]
+
+[Optional: Provide acknowledgments or credits to individuals, organizations, or funding sources that supported the project.]
+
+[Optional: Include a statement indicating any limitations or areas for further research identified during the course of the project.]
+
+[Optional: Offer recommendations or suggestions for future initiatives or studies based on the findings or outcomes of the project.]
+
+[End with any final remarks or closing thoughts that reinforce the significance of the project and its potential impact.] 
+
+\clearpage
+% --------------------------------------------------------------------------------
+\end{comment}
+% -------------------- ACKNOWLEDGEMENTS ------------------------
+
+% MODIFY THIS SECTION
+\begin{comment}
+\section*{Acknowledgement} \large
+
+% ------------------- You can remove this part --------------------------
+\textbf{\textit{[NOTE]: This is just a sample acknowledgement statement. Kindly modify this accordingly.}}
+% -----------------------------------------------------------------------
+
+This work could not have been accomplished successfully without the help of many people.
+
+We would like to express our sincere gratitude to all those who have contributed to the completion of this thesis. Without their support, encouragement, and assistance, this endeavor would not have been possible.
+
+First and foremost, we are deeply indebted to our supervisor/advisor [Name], whose guidance, expertise, and unwavering support have been invaluable throughout this journey. Their insightful feedback, constructive criticism, and encouragement have significantly shaped the development of this thesis.
+
+We extend our heartfelt appreciation to the members of our thesis committee, [Name(s)], for their valuable input, suggestions, and scholarly insights. Their expertise and dedication have enriched the quality of this work and broadened our perspective on the subject matter.
+
+We are grateful to [Name(s) of Academic Department/Institution] for providing access to resources, facilities, and research opportunities essential for the completion of this thesis. Their institutional support has been instrumental in facilitating the research process and academic endeavors.
+
+We would like to thank our colleagues and peers for their camaraderie, encouragement, and intellectual exchange throughout this academic endeavor. Their friendship, support, and collaborative spirit have made this journey both rewarding and memorable.
+
+Special thanks are due to our family for their unwavering love, encouragement, and understanding during moments of academic challenges and triumphs. Their unconditional support and belief in our abilities have been a constant source of motivation and inspiration.
+
+Last but not least, we express our profound gratitude to all individuals who participated in this research study or provided assistance in any form. Their contributions have enriched the findings and added depth to the scholarly discourse explored in this thesis.
+
+In conclusion, we are deeply grateful to everyone who has played a part, big or small, in the completion of this thesis. Your support, guidance, and encouragement have been instrumental in this academic achievement, and for that, I am truly thankful.
+
+\end{comment}
+
+% --------------------------------------------------------------------------------
+
+
+% -------------------- OTHER SECTIONS -------------------------------
+
+% DO NOT MODIFY THIS SECTION
+
+% Just modify the contents of the individual sections in their
+% respective .tex files
+
+\tableofcontents % Inserts the table of contents
+\listoffigures % Inserts the list of figures
+\listoftables % Inserts the list of tables
+
+
+% --------------------------------------------------------------------------------
+% Start line numbering
+%\linenumbers
+
+% NOTE: Remove this line for the final, revised manuscript
+
+% --------------------------------------------------------------------------------
+
+\input{introduction.tex}
+\input{problem.tex}
+\input{methods.tex}
+%\input{results.tex}
+%\input{discussion.tex}
+%\input{futurework.tex}
+%\input{appendix.tex}
+
+%\clearpage
+\printglossary[type=\acronymtype]
+
+
+\bibliography{thesis_refs}
+\bibliographystyle{ieeetr}
+
+
+\end{document}

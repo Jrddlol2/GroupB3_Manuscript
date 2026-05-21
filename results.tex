@@ -1,0 +1,110 @@
+\chapter{Results}
+\hspace{\parindent} In this chapter, the author presents the results and detailed discussion of the performance evaluation for individual modules of the proposed \textit{NeuroSEE} pipeline. A more summarised discussion of these results can be found in the succeeding chapter.
+
+\section{Motion Artefact Correction}
+\hspace{\parindent} The main purpose of correcting movement artefacts is to aid the detection and segmentation of cells, which, in turn, can facilitate the accurate extraction of neural activity information for downstream analysis. Motion artefacts are usually induced when the mouse is turning or switching directions. Without prior correction, the succeeding stages in the pipeline may not work as accurately as expected. This, however, must be made as fast and computationally efficient as possible, especially when large high-dimensional datasets are being processed and analysed. 
+
+For the purpose of comparison, the author attempted to implement a Hidden Markov Model-based line-by-line correction using the method presented in \cite{dombeck2007imaging}. However, this method was shown to be inapplicable to large high-resolution datasets, as it is very computationally expensive and takes a large amount of time to finish correcting tens of thousands of image frames. Aside from this issue, it also poses a problem caused inherently by raster scanning. After correction, it was found that some frames contain "blank" lines that may represent the lines that were not sampled on that particular frame during the instance of animal movement, i.e. the animal moved in such a way that the laser scan hopped over that region. Since the pixels are acquired serially during raster scanning, there may be no actual data recorded from those lines. Hence, there may be no other way to reconstruct them, thereby producing such blank lines. This, however, may be addressed by performing translational registration using frame-wise phase correlation prior to performing the line-by-line correction. However, it will make the process much more complex and will require more computational power and processing time, making the method inefficient for large scale datasets. 
+
+Thus, the author has successfully shown that using a subpixel image registration, while taking advantage of both the structural marking (red) and functional imaging (green) channels, can lead to a fast and accurate motion artefact correction, making it suitable for larger datasets. 
+
+\subsection{\textit{NeuroSEE} can accurately correct movement artefacts in \textit{in vivo} imaging datasets from awake, head-fixed moving animals}
+\hspace{\parindent} To evaluate whether the proposed \textit{NeuroSEE} pipeline can correct movement artefacts, the author tested it on \textit{in vivo} two-photon calcium imaging data which were recorded while imaging an awake, head-fixed moving mice. 
+
+The proposed method operates by splitting each frame into overlapping patches. The author initially sets the patch size to $128 \times 128$ pixel with an additional 32 pixels of overlap in each direction. Each of the patches were registered against a template. The initial template was computed by taking the median of $n=200$ frames in the structural marking (red) channel. After registering the patches, each path is further split into smaller overlapping patches. The patch sizes were modified experimentally to identify the size that gives the best performance. It has been shown that larger initial patches (either $128 \times 128$ or $96 \times 96$) are a good choice, especially when the SNR of the dataset is not high enough. 
+
+The performance of this method can be shown in Figure ~\ref{fig:Res1}. Panels A and B show the mean images of the red channel before and after correction, respectively. Uncorrected data gives a blurred mean image, while a properly motion-corrected data results to a crisp, noiseless mean image that indicates stability. To evaluate the improvement in the stability of the imaging data after correction, the author computed the correlation of each of the image frames with respect to the mean image. It can be shown in Figure ~\ref{fig:Res1}C that there is a significant increase in (\ac{cwm}) between the motion-corrected and raw data. Intuitively, this increase in \ac{cwm} coefficient indicates an improvement in stability. Figure ~\ref{fig:Res1}D and ~\ref{fig:Res1}E provide a more detailed frame-by-frame correlation with the mean. As shown in ~\ref{fig:Res1}D, all of the frames in the motion-corrected data had an increase in \ac{cwm}. Each sample point in this plot shows the correlation between each frame and their corresponding mean image. Points lying above the red line indicate an increase in \ac{cwm}.
+
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=5.7in]{figures/figs/Res1.png}
+	\caption{Performance of \textit{NeuroSEE} in correcting motion artefacts}
+	\label{fig:Res1}
+	\captionsetup{singlelinecheck=off,font=small}
+	% EDIT THIS:
+	\caption*{\textit{NeuroSEE} stabilises image sequences that were corrupted by motion artefacts: (A) Mean image of the structural marking (red) channel of the raw data; (B) A sharper and stabilised mean image of the structural marking (red) channel of the motion-corrected data; (C) Correlation coefficients of the raw and motion-corrected frames with respect to their corresponding means; (D-E) Frame-by-frame correlation-with-mean of the raw and motion-corrected data}
+\end{figure*}
+
+\subsection{\textit{NeuroSEE}'s movement correction leads to better source extraction}
+\hspace{\parindent} Most of the existing methods for source extraction assume stable image sequences, i.e. each cell retains its position throughout all the frames in the video. To examine the effect of motion artefact correction to cell detection and segmentation, the author applied the proposed hybrid detection algorithm to raw and motion-corrected data. It has been shown that raw datasets can lead to cells not being detected and segmented because the displacement of the position of cells across frames may lead to a blurred mean and correlation images, which can then result to improper evolution of level set functions. The quality of the extracted calcium traces significantly increase after motion artefact correction. 
+
+Figure ~\ref{fig:Res3}A shows the mean image of the red channel with overlaid contours nine representative cells. Their respective extracted ratiometric calcium traces are shown in Figure ~\ref{fig:Res3}B. It can be shown that \textit{NeuroSEE} can accurately detect and segment different types of cells and extract their corresponding calcium transients with sufficient signal-to-noise ratio. 
+
+\section{Cell Detection and Segmentation}
+\hspace{\parindent} The goal of proposing the \textit{NeuroSEE} pipeline is to standardise the analysis to a wide variety of cell models and imaging data types. To address this, the pipeline must not heavily rely on cellular morphology nor in stereotypical temporal activity. Hence, the author integrated morphology- and activity-based approaches to create a more flexible and versatile analysis pipeline.
+
+The performance of the proposed algorithm was optimised by experimentally tuning its parameters. Alpha, $\alpha$, parameter is sensitive to the degree of correlation of the detected cells. The higher the value of $\alpha$, i.e. approaching 1, the more conservative (or more selective) the system is in selecting a candidate ROI. This means that only those with high correlation across time will be nominated as candidate ROIs. On the other hand, if $\alpha$ is set to a lower value, i.e. approaching 0, more cells will be detected from the correlation image. Based on the experiments, it was found that a value of $\alpha$ in the range of 0.3 - 0.6 gives better initialisation results, as lower $\alpha$ values overestimate the number of ROIs, which can then be automatically pruned during the evolution of the level set functions. 
+
+Lambda, $\lambda$, parameter, on the other hand, highly depends on the cell’s temporal activity. The higher the value of $\lambda$ the more weight the data-based term has in the cost function, resulting to a more defined active contour. Based on the experiments, it was found that a value of $\lambda$ in the range of 10 - 60 gives better final cell boundary estimates.
+
+During testing, \textit{NeuroSEE} detected a total of 321 ROIs from the manually-labelled imaging dataset of the Neurofinder Challenge (Figure ~\ref{fig:Res2}C). Automatic initialisation using the morphology-based approach produced 120 ROIs (Figure ~\ref{fig:Res2}A), while activity-based approach produced produced 248 ROIs (Figure ~\ref{fig:Res2}B), summing to 368 initial ROI estimates with 47 automatically pruned or merged during the level set segmentation. Figure ~\ref{fig:Res2}D shows the manually labelled cells. 
+
+\subsection{\textit{NeuroSEE} outperforms existing approaches}
+\hspace{\parindent} The performance of \textit{NeuroSEE}'s ROI segmentation module was compared with other existing approaches, such as ABLE \cite{reynolds2017able}, Suite2p \cite{pachitariu2016suite2p}, and CNMF \cite{pnevmatikakis2016simultaneous}. As shown in Figure ~\ref{fig:Res2}E and Table ~\ref{table:Table1}, \textit{NeuroSEE} achieved the highest success rate, precision, and recall values among all these methods. These were computed by comparing their results to the manual labels provided in the Neurofinder Challenge dataset. It has been shown clearly that \textit{NeuroSEE} outperforms the other approaches, as it can detect even the non-circular/non-elliptical cells, as well as the temporarily inactive cells. Hence, \textit{NeuroSEE} is robust to cell shape and to temporal cellular inactivity. 
+
+
+\subsection{\textit{NeuroSEE} eliminates neuropil contamination}
+\hspace{\parindent} \textit{NeuroSEE} is capable of eliminating neuropil contamination prior to the extraction of the calcium traces. Figure ~\ref{fig:Res3}C shows a representative cell (cell 1 in Figure ~\ref{fig:Res3}A and B). The neuropil region, i.e. the region outside the active contour bounded by the yellow dashed line, is divided into four subregions. The signals coming from these subregions are weighted. This is considered as the neuropil signal (right-middle; red). This signal is subtracted from the measured signal of the ROI (right-top; magenta). The resulting signal (right-bottom; blue) is the decontaminated signal. It can be observed that the decontamination of the extracted calcium traces gives a higher signal-to-noise ratio. 
+
+\begin{sidewaysfigure*}
+	\centering
+	\includegraphics[width=7in]{figures/figs/Res2.png}
+	\caption{Performance of \textit{NeuroSEE} in detecting and segmenting cells}
+	\label{fig:Res2}
+	\captionsetup{singlelinecheck=off,font=small}
+	% EDIT THIS:
+	\caption*{\textit{NeuroSEE} gives the best performance among the other three existing cell detection and segmentation algorithms: (A) Detected cells during morphology-based initialisation; (B) Detected cells during activity-based initialisation; (C) Detected cells after performing the proposed hybrid cell detection and segmentation method; (D) Manually-labelled cells from the Neurofinder Challenge dataset; (E) Comparison of the performance metrics for different algorithms}  
+\end{sidewaysfigure*}
+
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=6in]{figures/figs/Res3.png}
+	\caption{Performance of \textit{NeuroSEE} in extracting neural activity information}
+	\label{fig:Res3}
+	\captionsetup{singlelinecheck=off,font=small}
+	% EDIT THIS:
+	\caption*{\textit{NeuroSEE} accurately extracts calcium transients: (A) Summary image of a two-photon video showing representative cells that are detected by the proposed algorithm; (B) Ratiometric calcium traces extracted from the nine cells indicated in the left image; (C) A $100 \times 100$ pixel patch showing one cell and its neuropil subregions. The right panel shows the composite signal prior to neuropil decontamination (top; magenta), the neuropil signal (middle; red), and the decontaminated signal (bottom; blue).}
+\end{figure*}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{ |p{2.5cm}||p{3.5cm}|p{3cm}|p{3cm}| }
+ 	\hline
+	 \multicolumn{4}{|c|}{Performance Evaluation} \\
+ 	\hline
+ 	Method &Success Rate (\%) &Precision (\%)&Recall(\%)\\
+	 \hline
+ 	NeuroSEE   & 75.4 & 72.6 & 78.4\\
+ 	ABLE   & 67.5 & 67.5 & 67.5\\
+ 	CNMF   & 63.4 & 60.7 & 66.5\\
+ 	Suite2p   & 63.7 & 56.5 & 73.1\\
+	\hline
+\end{tabular}
+\caption{Algorithm success rate on manually labelled dataset}
+\label{table:Table1}
+\end{table}
+
+
+
+
+\section{Place Field Analysis}
+\hspace{\parindent} To further evaluate whether the proposed \textit{NeuroSEE} pipeline is capable of extracting accurate neural activity information from the detected cells, the author performed 2D histogram-based place field analysis. This type of histogram binning-based technique is highly dependent on the amount of firings during the recording. Hence, it is necessary that the animal under test is active during the imaging sessions, and that it traverses through almost each of the regions in the environment so as to get a good map-like representation of space.  
+
+In order to perform place field analysis, it is required to simultaneously track the path of the mouse as it explores the circular chamber during the two-photon imaging sessions. This is done using a magnetic tracker whose sampling rate is 100 Hz. Since the frame scanning rate and the sampling rate of the tracker are not the same, the first thing to do before performing place field mapping is to make sure that their time stamps are synchronised. This is done by the \textit{Processor} module at the \textit{Behavioural Tracking} stage of the \textit{\ac{neurosee}} pipeline. When the \ac{2p} spike onset time series and the tracking time series are in sync, the occupancy, rate and place maps can now be constructed. The estimation of place fields can be used to quantify information encoding and transmission. 
+
+The sizes of the occupancy, rate and place maps were experimentally modified during the analysis. It was found that a $100 \times 100$ bin map size gives sufficient results. Each bin in the occupancy and rate maps gives the frequency of space occupancy and cell firing, respectively. Dividing the rate map by the occupancy map produces the place map, which suggests the selectivity of firing of individual place cells with respect to a particular region in space. 
+
+\subsection{\textit{NeuroSEE} shows promising performance in monitoring the dynamics of hippocampal place cells}
+\hspace{\parindent} Based on the place maps obtained after performing place field analysis, it has been shown that \textit{NeuroSEE} can be used to monitor the changes in the spiking activity of hippocampal place cells across several imaging sessions. The place maps show promising results in demonstrating the spatial selectivity of a population of cells in the hippocampus. The estimation of place fields can be used in quantifying information encoding and transmission. Hence, this tool can be used in investigating how the spatiotemporal dynamics of neural cortical circuits involve in memory encoding and recall are affected by Alzheimer's disease as it progresses. Place field analysis can be performed across several imaging days to quantify and analyse the possible changes in dynamics of a population of place cells. 
+
+To further improve the results, it is suggested to record more imaging data for each imaging session. The longer the time of recording, i.e. the longer the mouse explores the environment, the more pronounced the place maps would be. It is also suggested to use a more accurate and precise estimation of the spatial information content by using information theoretic-based approaches, such as Gaussian Process-based method. This may provide a more data-efficient estimation than 2D spike binning-based approach. 
+
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=5.7in]{figures/figs/Res4.png}
+	\caption{Performance of \textit{NeuroSEE} in place field analysis}
+	\label{fig:Res4}
+	\captionsetup{singlelinecheck=off,font=small}
+	% EDIT THIS:
+	\caption*{(A) Behavioural track: Gray lines represent the trajectories of the mouse in the circular chamber and the different coloured dots represent the points in the chamber where different respective cells fired action potentials; (B) Occupancy map: Indicates the frequency of the mouse in occupying a certain region in space. The space is divided into spatial bins.; (C) Spiking activities of representative cells: The signal on top is the extracted ratiometric calcium trace and the signal below is the non-negative derivative of the calcium trace which represents the spike onsets.; (D-E) Original and smoothened place maps}
+\end{figure*}
