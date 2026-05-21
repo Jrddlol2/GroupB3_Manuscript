@@ -2,56 +2,16 @@
 % References for the revised manuscript.
 % =====================================================================
 
-% --- Rationale for Thesis Build Up ---
+% --- Background---
 
-@article{Tironi2018,
-    author = {L. Paget-Seekins, M. Tironi},
-    title = {The publicness of public transport: The changing nature of public transport in Latin American cities},
-    journal = {Transport Policy},
-    year = {2016},
-    doi = {doi: 10.1016/j.tranpol.2016.05.003}
-}
-
-@article{Spatio2026,
-    author = {S. R. D. Castro, C. A. C. Tadle, and B. G. Carcellar III},
-    title = {Spatiotemporal analysis of traffic accidents and traffic congestion along Commonwealth Avenue using crowdsourced Waze Traffic Data},
-    journal = {ISPRS Annals of the Photogrammetry, Remote Sensing and Spatial Information Sciences},
-    pages = {165--172},
-    year = {2026},
-    doi = {isprs-annals-x-5-w4-2025-165-2026}
-}
-
-@misc{EDSAstat2026,
-    author = {E. F. Rosales},
-    title = {EDSA busway ridership hits over 66 million in 2025},
-    year = {2026},
-    url = {https://www.philstar.com/nation/2026/01/13/2500557/edsa-busway-ridership-hits-over-66-million-2025}
-}
-
-@article{EDSApolicy2023,
-    author = {S. M. Gaspay, N. C. Tiglao, M. A. Tacderas, N. J. Tolentino, and A. C. Ng},
-    title = {Reforms in Metro Manila’s bus transport system hastened by the Covid-19 pandemic: A policy capacity analysis of the EDSA busway},
-    journal = {Research in Transportation Economics},
-    year = {2023},
-    volume = {100},
-    page = {10135},
-    doi = {10.1016/j.retrec.2023.101305}
-}
-
-@article{MicrosimModel2024,
-    author = {L. J. Ollero, K. Vergel, & Tiglao, N. C.},
-    title = {A Microsimulation Model of An Exclusive Bus Lane: The Case of EDSA Busway},
-    journal = {Philippine Transportation Journal},
-    volume = {7},
-    number = {2},
-    year = {2024}
-}
-
-@misc{BusRepair2023,
-    author = {S. Locus},
-    title = {DPWH to close portions of EDSA Bus Carousel for emergency repairs},
-    year = {2023},
-    url = {https://www.gmanetwork.com/news/topstories/metro/877831/dpwh-to-close-portions-of-edsa-bus-carousel-for-emergency-repairs/story/}
+@techreport{UN_WUP2018,
+    author      = {{United Nations Department of Economic and Social Affairs, Population Division}},
+    title       = {World Urbanization Prospects: The 2018 Revision},
+    institution = {United Nations},
+    address     = {New York, NY, USA},
+    number      = {ST/ESA/SER.A/420},
+    year        = {2019},
+    url         = {https://population.un.org/wup/assets/WUP2018-Report.pdf}
 }
 
 % --- Foundational MARL / RL references ---
@@ -550,4 +510,33 @@
   pages   = {3658--3677},
   year    = {2024},
   doi     = {10.3390/smartcities7060141}
+}
+
+% =====================================================================
+% NEW ENTRIES — add these to thesis_refs.bib
+%
+% Group 1 (REQUIRED): foundational tool/algorithm citations that the
+% methods chapter already relies on in the text but does not yet cite.
+% These are classic sources, so they predate the 5-year window by
+% necessity — a panel expects the canonical reference for a named tool,
+% not a recent paper that merely uses it.
+%
+% Group 2 (RECOMMENDED outside RRLs): recent (within 5 years) sources
+% that strengthen specific claims. Tang et al. (2024) is especially
+% useful because it is from the same lab as Rodriguez et al. and
+% directly addresses training-time robustness (domain randomization +
+% curriculum), which bears on the training-regime question.
+% =====================================================================
+
+% --- Group 1: foundational tool / algorithm citations ---
+
+% Gymnasium — the single-agent RL API standard, cited where the methods
+% explain why a single-agent interface cannot represent the multi-agent
+% asynchronous bus-control problem.
+@article{Towers2024Gymnasium,
+  author  = {Towers, Mark and Kwiatkowski, Ariel and Terry, Jordan K. and Balis, John U. and De Cola, Gianluca and Deleu, Tristan and Goul\~{a}o, Manuel and Kallinteris, Andreas and Krimmel, Markus and KG, Arjun and Perez-Vicente, Rodrigo and Pierr\'{e}, Andrea and Schulhoff, Sander and Tai, Jun Jet and Tan, Hannah and Younis, Omar G.},
+  title   = {Gymnasium: A Standard Interface for Reinforcement Learning Environments},
+  journal = {arXiv preprint arXiv:2407.17032},
+  year    = {2024},
+  doi     = {10.48550/arXiv.2407.17032}
 }
