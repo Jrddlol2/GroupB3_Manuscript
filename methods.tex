@@ -113,7 +113,7 @@ Four stochastic generators inject variability into the Python environment. Gener
 \label{tab:notation}
 \begin{tabularx}{\textwidth}{l X l}
 \hline
-\textbf{Symbol} & \textbf{Meaning} & \textbf{Domain / units} \\
+\textbf{Symbol} & \textbf{Definition} & \textbf{Domain / units} \\
 \hline
 $\eta$ & Weather disturbance intensity; directly sets the coefficient of variation of disturbed inter-stop travel time ($CV = \eta$). $\eta = 0$ disables the weather generator. & dimensionless \\
 $\sigma_d$ & Standard deviation of the per-episode passenger-demand scaling factor. $\sigma_d = 0$ fixes demand at its baseline mean. & dimensionless \\
@@ -202,6 +202,31 @@ Following Littman~\cite{Littman1994}, the bus fleet control problem is formulate
 
 Because bus control is asynchronous and event-driven, agents act only upon arrival at a control stop. The formulation maintains a per-agent local transition $P_i : S_i \times A_i \rightarrow S_i$, with $S_i$ the local observation of agent $i$ \cite{Wangsun,Rodriguez2023Cooperative}.
 
+\subsubsection{Double Deep Q-Network Foundation}
+\label{subsec:ddqn-foundation}
+
+The Bellman optimality equation in Eq.~\eqref{eq:bellman} defines the value $Q^*(s,a)$ that an ideal controller would assign to each state-action pair, but it cannot be solved exactly for a state space as large as the bus-control problem, where the observation is a continuous vector of headways, loads, and queues. Two successive approximations bridge this gap. The first, $Q$-learning~\cite{Bellman1957,Littman1994}, replaces the exact solution with an iterative update that nudges a stored estimate $Q(s,a)$ toward the one-step Bellman target $r + \gamma \max_{a'} Q(s',a')$ after each observed transition. The second, the Deep $Q$-Network (DQN)~\cite{Mnih2015DQN}, replaces the lookup table with a neural network $Q(s,a;\theta)$ of weights $\theta$, so that the value function generalizes across the continuous state vectors the bus environment produces rather than requiring a separate stored entry for every possible state. DQN trains $\theta$ by minimizing the temporal-difference loss between the network's prediction and a target computed from a periodically frozen copy of the network, with transitions drawn from an experience replay buffer to decorrelate consecutive samples.
+
+DQN has a known structural flaw that is decisive for this study: it systematically \textit{overestimates} action values~\cite{vanHasselt2016DDQN}. The cause is the single $\max$ operator in the target. Because the same network both proposes the next action ($\arg\max_{a'}$) and evaluates how good that action is ($\max_{a'} Q$), any noise in the value estimates is selected for --- the $\max$ preferentially picks whichever action happens to have been overvalued by chance, and that inflated value is then propagated back into the target. In a deterministic, well-behaved environment this bias is mild, but the swept-disturbance regime that this study intentionally generates is the opposite: heavy-tailed weather delays and discrete breakdowns produce high-variance returns, and high variance is precisely what feeds the overestimation mechanism. A controller trained under these conditions with plain DQN would be expected to learn systematically inflated value estimates, with no guarantee that the inflation is uniform across actions --- which is what makes it dangerous, since it can change which action looks best.
+
+The Double Deep $Q$-Network (DDQN)~\cite{vanHasselt2016DDQN} removes this bias by \textit{decoupling action selection from action evaluation}. The online network with weights $\theta$ is still used to select the next action, but a separate target network with weights $\theta^-$ is used to evaluate that action's value. The DDQN learning target is
+
+\begin{equation}
+y^{\text{DDQN}} = r(s,a) + \gamma\, Q\!\left(s',\, \arg\max_{a'} Q(s', a'; \theta);\; \theta^-\right),
+\label{eq:ddqn_target}
+\end{equation}
+
+in contrast to the plain-DQN target $y^{\text{DQN}} = r(s,a) + \gamma\, \max_{a'} Q(s', a'; \theta^-)$, which uses a single network's $\max$ for both roles. The distinction is that in Eq.~\eqref{eq:ddqn_target} the action is chosen by $\theta$ but scored by $\theta^-$: for the overestimation to survive, both networks would have to overvalue the \textit{same} action simultaneously, which is far less likely than a single network overvaluing it alone. The network is then trained by minimizing the squared temporal-difference error between its prediction and this target,
+
+\begin{equation}
+\mathcal{L}(\theta) = \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}} \left[ \left( y^{\text{DDQN}} - Q(s,a;\theta) \right)^2 \right],
+\label{eq:ddqn_loss}
+\end{equation}
+
+where $\mathcal{D}$ is the experience replay buffer and the target weights $\theta^-$ are held fixed for a number of updates (or slowly tracked toward $\theta$ via a soft update) so that the regression target does not move at every step.
+
+Three properties make DDQN the appropriate value-based learner for this study, and each maps onto a specific feature of the bus-control problem. First, the discrete action space developed in Section~\ref{subsec:state-space} below ($|A_i| = 10$ holding-and-skipping actions per control event) is exactly the setting value-based methods are built for: the $\arg\max$ in Eq.~\eqref{eq:ddqn_target} is a finite enumeration over ten options, not a search over a continuous space. Second, the double estimator directly counters the overestimation bias that the study's deliberately high-variance disturbance regime would otherwise amplify, as argued above. Third, DDQN inherits DQN's experience-replay and target-network machinery, which is what makes it stable enough to train under disturbance without the auxiliary stabilizers that actor-critic methods require; the consequences of this choice for training stability are taken up in Section~\ref{sec:challenges}. The event-based discount $e^{-\beta t}$ introduced in the Bellman Foundation replaces the fixed $\gamma$ in Eq.~\eqref{eq:ddqn_target} when the target is computed in the asynchronous setting, so the DDQN target inherits the same event-adjustment as the underlying Bellman recursion. The combination of DDQN with parameter sharing and the centralized-training, decentralized-execution scheme is specified in the Proposed Learning Algorithm subsection.
+
 \subsubsection{Agents ($N$)}
 
 The decision-making agents are the individual bus units $i \in N$ operating along the corridor. To avoid combinatorial blow-up and to keep the system invariant to fleet size, all agents share a single neural-network policy under a \textbf{parameter-sharing} architecture and act decentrally on their own local observations at deployment \cite{Wangsun,Rodriguez2023Cooperative,Christianos2021PS}. Parameter sharing means that one network's weights serve every bus; each bus computes its own action from its own observation, but learning updates from any bus improve the policy for all of them.
@@ -225,7 +250,7 @@ The local observation $s_{i,t}$ at agent $i$ on arrival at a control stop is a v
 
 \subsubsection{Action Space ($A_i$)}
 
-The agent's action $a_{i,t} = \pi_\theta(s_{i,t})$ combines two discrete components, following the action-space design of Rodriguez et al.~\cite{Rodriguez2023Cooperative}:
+\label{subsec:action-space} The agent's action $a_{i,t} = \pi_\theta(s_{i,t})$ combines two discrete components, following the action-space design of Rodriguez et al.~\cite{Rodriguez2023Cooperative}:
 
 \begin{itemize}
 
