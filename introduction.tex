@@ -5,14 +5,13 @@
 % =============================================================
 
 \section{Background of the Study}
-The public transportation system has long been a commodity to people; it operates on different terrains, has different forms, and has predetermined routes depending on their geographical location and the needs of commuters \cite{EdsaCarousel2025Overview}. With an increase in urbanization over time, the demand for transportation has also increased. Despite the predicted decline in urbanization rates in Southeast Asia, the Philippines is experiencing the opposite \cite{UN_WUP2018}. Due to the increased urbanization and the continuous increase in population (especially in urban areas), people start looking for different alternatives in transportation \cite{Cervero2000}. With the increasing number of motor vehicles on the road, the traffic congestion worsens, which leads to commuters finding other means to quickly reach their destination. In Metro Manila, severe traffic congestion, stemming from insufficient road infrastructure and poor traffic mitigation policies, has resulted in a highly inefficient public transport system \cite{NEEDCITE_congestion}. As a response, the Philippine government launched the EDSA Bus Carousel in 2020. It is the only busway system in Metro Manila implemented by the government to have a designated lane, and separated from other cars by concrete barriers \cite{Chua2026}.
+The public transportation system has long been a commodity to people; it operates on different terrains, has different forms, and has predetermined routes depending on their geographical location and the needs of commuters \cite{EdsaCarousel2025Overview}. With an increase in urbanization over time, the demand for transportation has also increased. Despite the predicted decline in urbanization rates in Southeast Asia, the Philippines is experiencing the opposite \cite{UN_WUP2018}. Due to the increased urbanization and the continuous increase in population (especially in urban areas), people start looking for different alternatives in transportation \cite{Cervero2000}. With the increasing number of motor vehicles on the road, the traffic congestion worsens, which leads to commuters finding other means to quickly reach their destination. In Metro Manila, severe traffic congestion, stemming from insufficient road infrastructure and poor traffic mitigation policies, has resulted in a highly inefficient public transport system \cite{Spatio2026}. As a response, the Philippine government launched the EDSA Bus Carousel in 2020. It is the only busway system in Metro Manila implemented by the government to have a designated lane, and separated from other cars by concrete barriers \cite{Chua2026}. Throughout the years of implementation, a large number of commuters have utilized the system with an average of 183,000 daily passengers, climbing up to 320,000 during peak periods, with a ridership of nearly 67 million in 2025, up from 63.02 million in 2024 \cite{DOTr2025Ridership}. With that amount of ridership, the EDSA Bus Carousel can be safely assumed to be one of the backbones of Metro Manila commuting.
+
+Despite the gradual increase in demand, the EDSA Bus Carousel still faces a lot of significant operational issues that affect the quality of bus routing. Firstly, the LTFRB relied on a tedious manual monitoring process by deploying personnel at each stop, creating decisions through empirical observation. \cite{EDSApolicy2023}. In relation to that, it is also clear that bus bunching has not been resolved; most of the time, their designated dispatch schedule is not followed \cite{MicrosimModel2024}. There is an acknowledged lack of a structured monitoring framework for operations (e.g., dispatching, dwell time, bus bunching), in which adjustments are often done only after recurring issues surface \cite{Tiglao2025}. Moreover, mechanical failures or bus breakdowns are also prominent in Metro Manila, which contributes to a stressful environment, highlighting that poor vehicle condition and the constant threat of mid-route breakdowns are significant chronic stressors for Filipino bus drivers \cite{Chua2026}. Furthermore, environmental stochasticity severely destabilizes operations, with heavy rainfall reducing vehicle speeds by 7.4\% and road capacity by 15\% \cite{TSSP_Rain2018}. Severe weather events often initiate localized flooding at key segments like Muñoz and Monumento Stations or cause severe degradation, forcing operational halts and emergency speed restrictions that further affect the busway’s performance  \cite{PhilstarTyphoon2024, PIA_Emergency2023, BusRepair2023}. Given these operational hurdles, the bus dispatching process of the EDSA Carousel can be modeled as a Vehicle Scheduling Problem (VSP).
 
 [WIP]
 
 % ===== TO BE EDITED =====
-Despite its growing demand and designated lanes, the EDSA Carousel still faces significant operational problems that degrade the quality of bus routing. Initially, regulatory bodies relied on a tedious manual monitoring process by deploying personnel at each stop. Furthermore, like any other traffic network, busway transit is inherently stochastic and largely influenced by its surrounding environment. The system frequently struggles with external and internal disruptions, including extreme weather that causes heavy-tailed delays, unexpected vehicle breakdowns, and sudden surges in passenger demand. Consequently, the designated dispatch schedules are rarely followed, leading to persistent issues like bus bunching and irregular dispatch intervals.
-
-Given these operational hurdles, the bus dispatching process of the EDSA Carousel can be modeled as a Vehicle Scheduling Problem (VSP). Traditional rule-based and static scheduling methods struggle significantly in stochastic traffic environments, as they cannot adapt to real-time disruptions like extreme weather or sudden passenger surges.
 
 To address the inadequacies of fixed schedules, modern transit research has shifted toward data-driven approaches. Multi-Agent Reinforcement Learning (MARL) has emerged as a promising solution, allowing distributed decision-making where individual buses adapt their dispatch schedules based on real-time environmental observations. However, while recent studies highlight the potential of MARL in dynamic scheduling, existing models are primarily evaluated in controlled, ideal simulation settings. A critical research gap remains in evaluating these MARL-based models under the combined, simultaneous severe disruptions—such as heavy rain, mechanical breakdowns, and traffic variations—that characterize real-world corridors like EDSA.
 
@@ -25,9 +24,6 @@ Although recent studies have demonstrated the potential of MARL-based dynamic sc
 
 Three observations motivate this study. First, Manila's EDSA Carousel northbound corridor is a high-volume bus rapid transit route that routinely experiences the three classes of disturbance most damaging to static schedules: demand surges during peak hours and weather events, weather-induced heavy-tailed travel times during typhoons and heavy rainfall, and stochastic bus breakdowns during operation. The corridor carries on the order of $1.8\times10^5$ passengers on an average day, with recorded single-day peaks exceeding $3.2\times10^5$ during high-demand periods \cite{DOTr2025Ridership}, and its operations are routinely suspended during tropical-cyclone conditions when Metro Manila is placed under elevated storm signals \cite{DOTr2020Suspension}. Second, recent advances in Multi-Agent Reinforcement Learning (MARL) have made adaptive, decentralized bus control feasible in principle, with reported gains in passenger waiting time and headway regularity \cite{Rodriguez2023Cooperative,Wang2023MultiObj,Wangsun}. Third, those reported gains have been demonstrated almost entirely under idealized simulation assumptions: stationary Poisson arrivals, symmetric Gaussian travel times, and no fleet failures. Whether the gains persist when a real corridor's actual disturbance profile is applied is unknown. Closing that knowledge gap is the motivation for this work.
 
-% =============================================================
-% PART B — REVIEW OF RELATED WORK
-% =============================================================
 
 \section{Review of Related Work}
 This section surveys prior work on data-driven bus and traffic scheduling using a funnel structure. It starts from the broad shift from static to learning-based control, narrows to single-agent reinforcement learning and its known structural limits in the bus-fleet setting, narrows again to Multi-Agent Reinforcement Learning (MARL) and the specific simulation assumptions under which existing MARL bus-scheduling results have been validated, and ends at the robustness gap that this study addresses.
@@ -35,73 +31,195 @@ This section surveys prior work on data-driven bus and traffic scheduling using 
 \subsection{From Static Rules to Machine Learning}
 Machine Learning (ML) techniques have become standard tools for modeling and forecasting traffic patterns in uncertain environments \cite{huang2019}. The primary advantage of this shift is its ability to respond quickly in real-time conditions, as its forecasts update continuously with newly observed information \cite{pang2019}. Recent applications of these techniques to transportation systems have produced clear improvements \cite{patil2025}. Recent applications to transit operations have produced measurable gains: Barrera Hernandez et al. applied demand forecasting to drive a heuristic dispatcher for bus operations in Bogotá, reporting reductions in passenger waiting time and operational cost relative to fixed timetables \cite{Barrera2025Optimization}, and Usman et al. used ML-based density estimation to improve public transit responsiveness in real time \cite{Usman2025ML}. Both exemplify the recurring structural limitation of ML in this domain. Despite these clear predictive advances, standalone machine learning frameworks suffer from a fundamental and recurring structural limitation within public transit control \cite{alexandre2023}. While the model successfully adapts to live data, it only outputs a prediction such as expected passenger demand or expected corridor density rather than an actual control decision or dispatching action \cite{pang2019}. Because standalone ML cannot execute an operational decision on its own, the downstream dispatcher remains a separate, hand-coded heuristic rule that acts externally on the generated forecast \cite{alexandre2023, pang2019}. In the framework proposed by Barrera Hernandez et al., specifically, the forecaster informs the dispatcher but does not itself decide what to do \cite{Barrera2025Optimization}. Consequently, final control decisions, such as whether to hold a vehicle, exactly how long to hold it, or whether to initiate a stop-skipping maneuver are still left to rigid, hand-specified rule thresholds acting on the predictions \cite{alexandre2023, verbich2021}. Standalone ML improves anticipatory planning visibility but ultimately fails to establish an integrated, closed-loop control mechanism capable of acting automatically on its own predictions \cite{pang2019}. 
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{Progression from static rules to reinforcement learning along the dimensions that determine real-time control capability. The decisive distinction is the final column: only reinforcement learning makes the dispatching action itself a learned output. This study instantiates the reinforcement-learning row as a parameter-sharing Double Deep Q-Network under centralized training with decentralized execution (Chapter~3).}
+\caption{Progression from static rules to reinforcement learning along the dimensions that determine real-time control capability.}
 \label{tab:control_paradigms}
+
 \footnotesize
-\begin{tabular}{p{2.4cm} p{2.5cm} p{2.6cm} p{2.9cm}}
+\renewcommand{\arraystretch}{1.3}
+
+\begin{tabularx}{\textwidth}{
+>{\RaggedRight\arraybackslash}p{2.8cm}
+>{\RaggedRight\arraybackslash}p{3.5cm}
+>{\RaggedRight\arraybackslash}p{3.5cm}
+>{\RaggedRight\arraybackslash}X
+}
 \hline
-\textbf{Paradigm} & \textbf{Adapts to real-time conditions?} & \textbf{Produces a dispatching action?} & \textbf{How the action is determined} \\
+\textbf{Paradigm} & 
+\textbf{Adapts to real-time conditions?} & 
+\textbf{Produces a dispatching action?} & 
+\textbf{How the action is determined} \\
 \hline
-Static / heuristic scheduling & No --- fixed offline from historical averages & Yes, but action is pre-committed before operation & Hand-specified timetable or fixed holding rule; no adaptation to live state \cite{Daganzo2009,FEMbusbunching} \\
-Machine-learning forecasting & Yes --- forecasts update with observed data & No --- outputs a prediction, not a control decision & Downstream dispatcher remains a separate hand-coded rule acting on the forecast \cite{Barrera2025Optimization,Usman2025ML} \\
-Reinforcement learning & Yes --- policy conditions on live observed state & Yes --- the action (hold / skip) is the policy output & Action is a learned mapping from state, optimized for long-horizon return \cite{Momenikorbekandi2023Intelligent,Rodriguez2023Cooperative,Wangsun} \\
+
+Static / heuristic scheduling & 
+No,fixed offline from historical averages & 
+Yes, but action is pre-committed before operation & 
+Pre-set timetables or static rules that ignore live conditions \cite{Daganzo2009,FEMbusbunching} \\
+
+Machine-learning forecasting & 
+Yes, forecasts update with observed data & 
+No, outputs a prediction, not a control decision & 
+A separate, non-learning optimizer or manual rule dictates the response to the forecast \cite{Barrera2025Optimization,Usman2025ML} \\
+
+Reinforcement learning & 
+Yes, policy conditions on live observed state & 
+Yes, the action (hold / skip) is the policy output & 
+The policy learns directly from the environment to select actions that maximize long-term performance \cite{Momenikorbekandi2023Intelligent,Rodriguez2023Cooperative,Wangsun} \\
+
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
-\subsection{Single-Agent Reinforcement Learning and Its Structural Costs}
-Reinforcement Learning (RL) closes that gap by learning a policy that maps observed states to actions through trial-and-error interaction with the environment \cite{Momenikorbekandi2023Intelligent}. Single-Agent Reinforcement Learning (SARL) has been applied directly to bus holding control, including the STDH-DQN approach of Zhao et al.~\cite{Zhao2022STDH}, which uses a self-attention state encoder over spatial-temporal AVL features, and the more recent SA-DRL approach of Zhang and Zheng~\cite{Zhang2025SADRL}, which reports favorable results against MARL baselines on a bidirectional timetabled line by encoding categorical identifiers (vehicle ID, station ID, trip ID) as state features. SARL is therefore a real and competitive option in this space; the question is not whether it works but where it breaks.
+The decisive distinction is the final column: only reinforcement learning makes the dispatching action itself a learned output. This study instantiates the reinforcement-learning row as a parameter-sharing Double Deep Q-Network under centralized training with decentralized execution (Chapter~3).
+\FloatBarrier
+\subsection{Single-Agent Reinforcement Learning and Its Limitations}
+Reinforcement Learning (RL) closes the prediction--control gap by learning a \textit{policy}: a mapping from observed system states to actions, optimized through trial-and-error interaction with the environment to maximize a long-horizon reward signal \cite{Momenikorbekandi2023Intelligent}. Unlike a forecaster, an RL agent does not just predict what will happen --- it decides what to do. The reward signal closes the loop: the agent's action changes the environment, the environment returns a new state and a scalar reward, and the policy is updated so that better actions become more likely the next time a similar state is encountered.
 
-SARL has three structural costs in multi-bus control that are documented in the bus-scheduling and traffic-control literature:
+When RL is applied to a multi-vehicle problem such as bus-fleet control, the simplest formulation treats the whole fleet as one entity controlled by a single agent. This is \textbf{Single-Agent Reinforcement Learning (SARL)}: one centralized policy observes the full system state and emits a joint action covering every bus at once. SARL has been applied directly to bus holding control, including the STDH-DQN approach of Zhao et al.~\cite{Zhao2022STDH}, which uses a self-attention state encoder over spatial-temporal AVL features, and the more recent SA-DRL approach of Zhang and Zheng~\cite{Zhang2025SADRL}, which encodes categorical identifiers (vehicle ID, station ID, trip ID) as state features and reports favorable results against MARL baselines on a bidirectional timetabled line. SARL is therefore a real and competitive option in this space; the question is not whether it works but where it begins to strain.
+
+SARL faces three scalability limitations in multi-bus control, each documented in the bus-scheduling and traffic-control literature. These limitations motivate the move to a multi-agent formulation in the next subsection; each has a corresponding design response that MARL provides.
 
 \begin{enumerate}
-    \item \textbf{State-space dimensionality growth.} A SARL formulation of $N$ buses on $M$ stops requires a global state $s \in \mathbb{R}^{N \cdot d}$, where $d$ is the per-bus feature count (position, headway, load). For EDSA with $M = 19$ stops and a fleet of $N \approx 12$--$30$ buses, $\dim(s)$ reaches 96--240. The function approximator must learn approximate permutation invariance over buses, a property not enforced by default in neural networks \cite{Wang2023MultiObj}.
-    
-    \item \textbf{Joint action-space combinatorial explosion.} A SARL controller emits a joint action $a = (a_1, \ldots, a_N) \in A^N$. With a hybrid action space ($|A_i| = 2 \times K_\alpha$ for holding-strength discretization level $K_\alpha$), at $K_\alpha = 11$ and $N = 20$ the joint set has $22^{20} \approx 7 \times 10^{26}$ elements. MARL with shared policies factorizes this to $N$ independent actions of size 22.
-    
-    \item \textbf{Sample inefficiency under non-stationarity.} SARL treats the fleet as a single dynamical system; every demand change triggers re-adaptation of the whole policy. MARL with parameter sharing benefits from experience aggregation, where every action by every bus is one sample for the same shared network \cite{Christianos2021PS,Yu2022MAPPO}.
+\item \textbf{State-space dimensionality growth.} A SARL formulation of $N$ buses on $M$ stops requires a global state $s \in \mathbb{R}^{N \cdot d}$, where $d$ is the per-bus feature count (position, headway, load). For the EDSA Carousel sub-corridor studied here, with $M = 24$ stops and a fleet of $N \approx 12$--$30$ buses, $\dim(s)$ reaches roughly $96$--$240$. The function approximator must also learn approximate permutation invariance over buses --- the policy should not depend on which arbitrary index a bus is assigned --- a property not enforced by default in neural networks \cite{Wang2023MultiObj}.
+
+\item \textbf{Joint action-space combinatorial growth.} A SARL controller emits a joint action $a = (a_1, \ldots, a_N) \in A^N$. With the hybrid action space adopted in this study ($|A_i| = 5 \times 2 = 10$, combining a 5-bin holding-strength discretization with a binary skip decision), a SARL controller managing $N = 20$ buses operates over a joint action space of $10^{20}$ combinations. Although deep RL policies do not enumerate these combinations directly --- they sample from a parameterized distribution over actions --- the credit-assignment burden remains: a single scalar reward must be attributed across all $N$ simultaneous component actions, and this attribution problem worsens as $N$ grows. MARL with shared policies factorizes the action selection into $N$ independent decisions of size $10$, each with its own attributable reward signal.
+
+\item \textbf{Sample inefficiency under non-stationarity.} SARL treats the fleet as a single dynamical system; every demand change, breakdown, or weather event triggers re-adaptation of the entire policy. MARL with parameter sharing benefits from \textit{experience aggregation}: every action by every bus generates one training sample for the same shared network, so each bus's experience accelerates learning for all of them \cite{Christianos2021PS,Yu2022MAPPO}.
 \end{enumerate}
 
-Recent SARL-for-bus-control work that outperforms MARL baselines achieves this partly by hand-engineering categorical ID features into the state, which is a workaround for the dimensionality problem rather than a structural solution and does not generalize across corridors with different fleet sizes or route topologies \cite{Zhang2025SADRL}. These costs motivate the move from a single centralized policy to a decentralized formulation.
+Recent SARL-for-bus-control work that competes successfully against MARL baselines does so partly by hand-engineering categorical agent-identity features into the state representation \cite{Zhang2025SADRL}. This is informative because it suggests that agent identity remains an important representational issue in SARL formulations even at the high end of reported performance --- the dimensionality concern in item~(1) above is partially addressed by smuggling identity through input features rather than by a change in policy class. The fix is workable on a fixed corridor but does not transfer cleanly when fleet size or route topology changes.
 
-We note a counter-position. Zhang and Zheng~\cite{Zhang2025SADRL} report SA-DRL matching or exceeding MARL baselines on bidirectional timetabled lines, attributing this to data-imbalance issues in MARL when some agents see few episodes. EDSA Carousel northbound is a high-frequency, single-direction BRT corridor closer to the loop-line assumptions where MARL has been shown to excel, which motivates our choice here while acknowledging this caveat.
+We note a counter-position. Zhang and Zheng~\cite{Zhang2025SADRL} report SA-DRL matching or exceeding MARL baselines on bidirectional timetabled lines, attributing this to data-imbalance issues in MARL when some agents see few episodes. The EDSA Carousel sub-corridor studied here is operated as a high-frequency BRT service along a defined directional segment, closer to the single-direction loop-line assumptions where MARL has been shown to excel, which motivates the MARL choice here while acknowledging this caveat.
 
 \subsection{Multi-Agent Reinforcement Learning}
-Multi-Agent Reinforcement Learning (MARL) addresses these costs by decomposing decision-making across multiple agents that share the environment. The problem is typically formalized as a Markov Game built on an underlying Markov Decision Process, with each agent maintaining its own local observation and acting under a shared or coordinated policy \cite{Li2023Departure,Sun2024Graph,Zuo2026AGV,Huang2025Joint,Bokade2023MARL}. Most modern formulations use Centralized Training with Decentralized Execution (CTDE): during training, agents have access to system-wide information and a shared objective; at deployment, each agent acts only on its own local observation \cite{Cao2022Train,Wang2024MultiAGV,Nie2025CMRM,Xu2026Hierarchical}. In the bus-scheduling setting, a parameter-sharing CTDE architecture is fleet-size invariant: the same trained policy applies regardless of how many buses are currently in service, because every bus is an instance of the same agent class acting on its own local headway, occupancy, and queue observations. Adding or removing a bus does not invalidate the trained model. Christianos et al.~\cite{Christianos2021PS} formally prove that parameter sharing with agent indication converges to optimal policies under standard cooperative assumptions.
+Multi-Agent Reinforcement Learning (MARL) addresses the three limitations above by decomposing decision-making across multiple agents that share the environment. Each limitation has a direct design counterpart in MARL: state-space growth is contained by giving each agent only its own \textit{local} observation rather than the global state; action-space growth is factorized by having each agent select only its own action; and the sample-inefficiency problem is mitigated by sharing one network's parameters across all agents, so that every agent's experience updates the same policy. The problem is typically formalized as a Markov Game built on an underlying Markov Decision Process, with each agent maintaining its own local observation and acting under a shared or coordinated policy \cite{Li2023Departure,Sun2024Graph,Zuo2026AGV,Huang2025Joint,Bokade2023MARL}.
 
-Recent progress has combined MARL with deep learning algorithms (Deep Q-Networks (DQN), Proximal Policy Optimization (PPO) and its multi-agent variant MAPPO, and Graph Attention Networks (GAT)) to handle high-dimensional observation spaces and complex interactions. These have been applied across vehicle scheduling, signal control, and logistics, generally reporting improvements in routing efficiency, congestion, and throughput in simulation \cite{Li2023Departure,Cao2022Train,Wang2024MultiAGV,Sun2024Graph,Zuo2026AGV,Huang2025Joint,Bokade2023MARL}.
+This decomposition introduces a new difficulty: \textit{partial observability}. No individual bus can see the full corridor state; it knows only its own headway, load, and immediate surroundings. A fully decentralized scheme in which each agent both trains and acts on its local observation alone would be unstable, because the other agents' simultaneously evolving policies make the environment non-stationary from any one agent's viewpoint --- the same local state can transition to different outcomes depending on what the other agents happen to be learning at that moment.
+
+To address this, most modern formulations use \textbf{Centralized Training with Decentralized Execution (CTDE)}. During training, agents are allowed to access system-wide information and optimize a shared objective; this stabilizes learning despite the non-stationarity introduced by simultaneously adapting agents. At deployment, each bus acts only on its own local observation, which is what makes the framework practically deployable on a real fleet without requiring a centralized real-time controller \cite{Cao2022Train,Wang2024MultiAGV,Nie2025CMRM,Xu2026Hierarchical}.
+
+In the bus-scheduling setting, a parameter-sharing CTDE architecture is fleet-size invariant: the same trained policy applies regardless of how many buses are currently in service, because every bus is an instance of the same agent class acting on its own local headway, occupancy, and queue observations. Adding or removing a bus does not invalidate the trained model. Christianos et al.~\cite{Christianos2021PS} demonstrate that parameter sharing scales effectively to large agent populations and provides empirical support for the fleet-size invariance claim.
+
+Recent progress has combined MARL with deep learning algorithms --- Deep Q-Networks (DQN), Proximal Policy Optimization (PPO) and its multi-agent variant MAPPO, and Graph Attention Networks (GAT) --- to handle high-dimensional observation spaces and complex interactions. These have been applied across vehicle scheduling, signal control, and logistics, generally reporting improvements in routing efficiency, congestion, and throughput in simulation \cite{Li2023Departure,Cao2022Train,Wang2024MultiAGV,Sun2024Graph,Zuo2026AGV,Huang2025Joint,Bokade2023MARL}.
 
 \subsection{MARL Applied to Bus Scheduling}
-Within bus scheduling specifically, several recent studies define the current state of the art. Rodriguez et al.\ developed a cooperative DDQN framework with a hybrid holding and stop-skipping action space; their environment was a simulated transit corridor with Poisson-distributed passenger arrivals and Gaussian inter-stop travel times, and they reported reductions in average passenger waiting time relative to an even-headway holding baseline \cite{Rodriguez2023Cooperative}. Wang and Sun extended MARL to multi-line services with a shared corridor using a multi-objective formulation that jointly optimizes headway regularity and operational cost, again under controlled simulated demand and travel-time profiles \cite{Wang2023MultiObj}. Their later distributional approach, IQNC-M, introduced implicit quantile networks and meta-learning for risk-sensitive bus holding under demand surges and traffic perturbations, but did not model weather-induced heavy-tailed delays or discrete breakdowns \cite{Wangsun}. Katzilieris et al.\ integrated MADDPG-based traffic signal control with dynamic bus lane access management on a simulated arterial network with deterministic signal cycles, reporting throughput improvements \cite{Katzilieris2026MARL}. Liu et al.\ \cite{Liu2023DRLHolding} reported DRL-based holding control under stochastic travel time and demand. Shi et al.\ \cite{Shi2022DistDRL} reported a distributed DRL bus control system in a connected environment, with breakdown events modeled but not weather.
+Within bus scheduling specifically, the MARL literature has accumulated along a recognizable trajectory: first establishing that holding control could be learned at all, then enriching the action and objective space, and most recently beginning to examine policy behavior under disturbance. This trajectory is what the present study extends.
 
-Across these studies, the simulation environments share three idealizing assumptions: passenger arrivals are stationary Poisson processes, inter-stop travel times are symmetric and well-behaved (Gaussian or similar), and the fleet experiences no discrete failure events. The reported performance gains are therefore conditional on those assumptions holding at deployment. Table~\ref{tab:marl_performance} summarizes what each study evaluated, what disturbances it modeled, and what it reported. Empty cells indicate disturbance classes not modeled in the cited study; the bottom row represents this work. No prior MARL bus paper has jointly modeled all four disturbance classes in a calibrated real-corridor microsimulation.
+The foundational result is due to Wang and Sun~\cite{Wang2020Holding}, who showed that a cooperative MARL framework could learn an effective bus-holding policy on a single-line corridor and outperform classical headway-equalization rules under idealized stochastic demand. Chen et al.~\cite{Chen2016MARLBus} provided an earlier proof-of-concept in the same vein on a corridor with multi-agent reinforcement learning over local headway observations. These early results established the viability of the approach but were limited to the holding action alone, restricting the policy's leverage once bunching had already developed.
 
-\begin{table}[h]
+Subsequent work enriched the formulation along two axes. Rodriguez et al.~\cite{Rodriguez2023Cooperative} extended the action space by combining holding with stop-skipping in a cooperative DDQN framework on a simulated transit corridor with Poisson-distributed passenger arrivals and Gaussian inter-stop travel times, reporting reductions in average passenger waiting time relative to an even-headway holding baseline. Wang and Sun~\cite{Wang2023MultiObj} extended the objective space, scaling MARL to multi-line services with a shared corridor and jointly optimizing headway regularity against operational cost under controlled simulated demand and travel-time profiles.
+
+Recent work has increasingly examined policy behavior under disturbance. Wang and Sun's IQNC-M~\cite{Wangsun} introduced implicit quantile networks and meta-learning for risk-sensitive bus holding, evaluating performance under demand surges and traffic-speed perturbations but not under weather-induced heavy-tailed delays or discrete vehicle breakdowns. In adjacent settings, Katzilieris et al.~\cite{Katzilieris2026MARL} integrated MADDPG-based traffic signal control with dynamic bus lane access management on a simulated arterial network with deterministic signal cycles; Liu et al.~\cite{Liu2023DRLHolding} reported DRL-based holding control under stochastic travel time and demand; and Shi et al.~\cite{Shi2022DistDRL} reported a distributed DRL bus control system in a connected environment with breakdown events modeled but without weather effects.
+
+Across this trajectory, the simulation environments share three idealizing assumptions: passenger arrivals are stationary Poisson processes, inter-stop travel times are symmetric and well-behaved (Gaussian or similar), and the fleet experiences no discrete failure events. Reported performance gains are therefore conditional on those assumptions holding at deployment. The EDSA Carousel sub-corridor studied here violates each of them. Travel times are highly non-stationary, with tail behavior driven by tropical-cyclone and heavy-rainfall events that suspend operations entirely on the most severe days \cite{DOTr2020Suspension}; passenger demand swings sharply across peak intervals, with single-day ridership peaks roughly $1.8\times$ the daily average \cite{DOTr2025Ridership}; and tight headways mean that any individual vehicle breakdown propagates through the corridor as a downstream demand-absorption problem rather than as an isolated event. A controller whose reported gains rest on the idealizing assumptions above has no validated behavior on a corridor that violates all three at once.
+
+Table~\ref{tab:marl_performance} summarizes what each study evaluated, what disturbances it modeled, and what it reported. No prior MARL bus paper has jointly modeled all four disturbance classes --- demand surges, traffic-speed perturbations, weather-induced heavy-tailed delays, and discrete breakdowns --- in a calibrated real-corridor microsimulation. The algorithmic choice this study adopts to address that combined-disturbance setting --- DDQN with parameter sharing under CTDE --- is justified in detail in Chapter 3, Section~3.3.10, alongside the rationale for not using actor-critic or distributional alternatives. The action space the agents operate on is correspondingly small and discrete: at each control event, an agent selects a holding strength from a five-bin discretization $\alpha \in \{0.0, 0.1, 0.2, 0.3, 0.4\}$ (multiplied by a maximum holding duration to yield seconds held) combined with a binary decision to skip the next stop, giving $|A_i| = 10$ actions per event. The full action-space rationale, including why discretization is preferred over a continuous holding parameter, is given in Chapter~3, Section~3.3.6.
+
+\begin{table}[htbp]
 \centering
-\caption{Reported performance and disturbance coverage across MARL bus-scheduling literature.}
+\caption{Disturbance coverage across MARL bus-scheduling literature.}
 \label{tab:marl_performance}
+
 \footnotesize
-\begin{tabular}{p{2.6cm} p{2.2cm} p{2.8cm} p{3cm} p{2.4cm}}
-\hline
-\textbf{Paper} & \textbf{Algorithm} & \textbf{Environment} & \textbf{Disturbances modeled} & \textbf{Reported gain} \\
-\hline
-Wang \& Sun (2023)~\cite{Wangsun} & IQNC-M (distributional) & Real-world bus services & Demand surges, traffic perturbations, service interruptions & Stable control under extreme events \\
-Wang \& Sun (2023)~\cite{Wang2023MultiObj} & Multi-objective MARL & Shared corridor, idealized & Demand variation only & Multi-line bunching reduction \\
-Rodriguez et al.\ (2023)~\cite{Rodriguez2023Cooperative} & Cooperative DDQN (hybrid action) & Chicago route, mesoscopic & Stochastic travel time, operator non-compliance & Wait time vs.\ headway-control baseline \\
-Katzilieris et al.\ (2026)~\cite{Katzilieris2026MARL} & MADDPG & Athens arterial in SUMO & Mixed traffic, peak/off-peak & Throughput improvement \\
-Liu et al.\ (2023)~\cite{Liu2023DRLHolding} & DRL holding & Synthetic single line & Stochastic travel time, demand & Wait time vs.\ no-control \\
-Shi et al.\ (2022)~\cite{Shi2022DistDRL} & Distributed DRL & Connected environment & Stochastic demand, breakdowns & Integrated control gains \\
-\textbf{This study} & \textbf{MAPPO + dual head} & \textbf{Calibrated EDSA SUMO} & \textbf{Surges + weather + breakdowns + traffic} & \textbf{To be evaluated} \\
-\hline
-\end{tabular}
+\renewcommand{\arraystretch}{1.3}
+
+\begin{tabularx}{\textwidth}{
+>{\RaggedRight\arraybackslash}p{2.5cm}
+>{\RaggedRight\arraybackslash}p{3.0cm}
+>{\RaggedRight\arraybackslash}p{2.8cm}
+>{\Centering\arraybackslash}p{2.2cm}
+>{\RaggedRight\arraybackslash}X
+}
+
+\toprule
+\textbf{Paper} &
+\textbf{Algorithm} &
+\textbf{Environment} &
+\textbf{Disturbances} &
+\textbf{Reported gain} \\
+\midrule
+
+Wang \& Sun (2020)~\cite{Wang2020Holding} &
+Cooperative MARL holding &
+Single-line, idealized &
+D &
+Bunching reduction vs.\ headway rule \\
+
+Chen et al.\ (2016)~\cite{Chen2016MARLBus} &
+Early MARL holding &
+Corridor, idealized &
+D &
+Proof-of-concept gains \\
+
+Rodriguez et al.\ (2023)~\cite{Rodriguez2023Cooperative} &
+Cooperative DDQN (hybrid action) &
+Chicago, mesoscopic &
+T &
+Wait time vs.\ headway-control baseline \\
+
+Wang \& Sun (2023)~\cite{Wang2023MultiObj} &
+Multi-objective MARL &
+Shared corridor, idealized &
+D &
+Multi-line bunching reduction \\
+
+Wang \& Sun (2023)~\cite{Wangsun} &
+IQNC-M (distributional) &
+Real-world bus services &
+S, T &
+Stable control under extreme events \\
+
+Katzilieris et al.\ (2026)~\cite{Katzilieris2026MARL} &
+MADDPG &
+Athens arterial, SUMO &
+T &
+Throughput improvement \\
+
+Liu et al.\ (2023)~\cite{Liu2023DRLHolding} &
+DRL holding &
+Synthetic single line &
+D, T &
+Wait time vs.\ no-control \\
+
+Shi et al.\ (2022)~\cite{Shi2022DistDRL} &
+Distributed DRL &
+Connected environment &
+D, B &
+Integrated control gains \\
+
+\textbf{This study} &
+\textbf{DDQN + PS (CTDE)} &
+\textbf{Calibrated EDSA SUMO} &
+\textbf{S, T, W, B} &
+\textbf{To be evaluated} \\
+
+\bottomrule
+\end{tabularx}
 \end{table}
 
-\subsection{The Robustness Gap}
-The idealized assumptions in Table~\ref{tab:marl_performance} limit how confidently the reported MARL gains can be expected to transfer to real urban corridors. Real corridors violate all three assumptions: demand exhibits non-stationary surges, weather-induced travel times are skewed and heavy-tailed, and individual buses break down stochastically. Wang and Sun themselves identify this robustness barrier as central, noting that existing MARL bus-control studies overlook robustness under perturbations and that this becomes critical when transferring models toward real-world deployment \cite{Wangsun}. Their IQNC-M framework is among the first to address demand surges and traffic-speed perturbations in bus holding control, but weather-induced heavy-tailed delays and discrete vehicle breakdowns remain outside its tested scenario set.
 
-Two further considerations explain why the gap has persisted in the literature. First, prior MARL bus-scheduling studies have typically used Poisson arrivals and Gaussian travel-time noise because these distributions have well-behaved tails that do not destabilize policy gradients during training; injecting heavy-tailed disruptions can prevent reward convergence unless the training protocol is structured to accommodate them \cite{Henderson2018Matters,Agarwal2021Precipice}. Second, historical anomaly data such as severe-weather days is rarely temporally aligned with operational bus data, which makes it difficult to derive empirically grounded parameters for a heavy-tailed disturbance generator. Both obstacles are addressable. The first is handled by training under ideal conditions and stress-testing in evaluation. The second is handled by cross-referencing weather datasets such as the Humanitarian Data Exchange rainfall anomaly indicator with the EDSA Carousel operational dataset to extract empirical travel-time statistics for severe-weather days.
+\FloatBarrier
+
+D~=~stochastic demand, S~=~demand surges, T~=~traffic-speed perturbation, W~=~weather-induced heavy-tail delay, B~=~discrete vehicle breakdown.
+ 
+\subsection{The Disturbance Gap}
+The idealized assumptions in Table~\ref{tab:marl_performance} limit how confidently the reported MARL gains can be expected to transfer to real urban corridors. Real corridors violate all three assumptions: demand exhibits non-stationary surges, weather-induced travel times are skewed and heavy-tailed, and individual buses break down stochastically. Wang and Sun themselves identify this as central, noting that existing MARL bus-control studies overlook performance under perturbations and that this becomes critical when transferring models toward real-world deployment \cite{Wangsun}. Their IQNC-M framework is among the first to address demand surges and traffic-speed perturbations in bus holding control, but weather-induced heavy-tailed delays and discrete vehicle breakdowns remain outside its tested scenario set.
+
+Two considerations explain why the gap has persisted:
+
+\begin{enumerate}
+\item \textbf{Training instability under heavy-tailed returns.} Prior MARL bus-scheduling studies have typically used Poisson arrivals and Gaussian travel-time noise because these distributions have well-behaved tails that do not destabilize policy gradients during training. Injecting heavy-tailed disturbances can prevent reward convergence unless the training protocol is structured to accommodate them \cite{Henderson2018Matters,Agarwal2021Precipice}. \textit{This study addresses the obstacle by training under ideal conditions and stress-testing the frozen policy in evaluation.}
+
+\item \textbf{Lack of temporally aligned anomaly data.} Historical severe-weather records are rarely aligned with operational bus data at the per-segment granularity needed for direct parameter estimation, making it difficult to derive empirically grounded parameters for a heavy-tailed disturbance generator. \textit{This study addresses the obstacle by cross-referencing weather datasets such as the Humanitarian Data Exchange rainfall anomaly indicator with the EDSA Carousel operational dataset to extract empirical travel-time statistics for severe-weather days.}
+\end{enumerate}
 
 \subsection{Significance of Closing the Gap}
-Closing the robustness gap matters for two reasons. First, deploying MARL bus-scheduling models on the basis of ideal-simulator benchmarks alone leaves their real-world failure modes unknown until deployment, which is an unacceptable risk profile for a system that carries hundreds of thousands of daily passengers. Second, the relevant performance question for transit operators is not only average-case waiting time under quiet conditions but \textit{how a control policy degrades and how quickly it recovers} when a disruption occurs, a metric that prior MARL bus-scheduling work does not report. Establishing a reproducible stress-testing protocol pairing a calibrated corridor simulation with configurable demand, weather, and breakdown generators therefore contributes both an empirical robustness characterization and a reusable evaluation framework for subsequent MARL work in this domain \cite{Li2023Departure,Wang2024MultiAGV,Che2024Recharging,Huang2025Joint,Bokade2023MARL}.
+Understanding policy performance under disturbance matters for two reasons. First, deploying MARL bus-scheduling models on the basis of ideal-simulator benchmarks alone leaves their real-world failure modes unknown until deployment, which is an unacceptable risk profile for a system that carries hundreds of thousands of daily passengers. Second, the relevant performance question for transit operators is not only average-case waiting time under quiet conditions but \textit{how a control policy degrades and how quickly it recovers} when a disruption occurs, a metric that prior MARL bus-scheduling work does not report. Establishing a reproducible stress-testing protocol pairing a calibrated corridor simulation with configurable demand, weather, and breakdown generators therefore contributes both an empirical characterization of performance under disturbance and a reusable evaluation framework for subsequent MARL work in this domain \cite{Li2023Departure,Wang2024MultiAGV,Che2024Recharging,Huang2025Joint,Bokade2023MARL}.
+
+
+
+
+
+
+

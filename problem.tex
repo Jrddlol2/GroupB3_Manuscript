@@ -8,9 +8,6 @@ To address the rigidity of static schedules, recent scheduling studies have shif
 
 This study develops and evaluates a MARL-based bus scheduling model on a calibrated stochastic simulation of the EDSA Carousel northbound corridor, with non-ideal conditions operationalized as the simultaneous and independent injection of passenger demand surges, severe-weather travel-time skew, and Poisson-distributed bus breakdowns. The objective is to quantify how MARL performance degrades from its ideal-condition baseline and how quickly it recovers, producing the first integrated robustness characterization for MARL bus scheduling under this specific combination of disturbances.
 
-\section{Research Problem}
-Existing Multi-Agent Reinforcement Learning frameworks for bus scheduling demonstrate measurable improvements in passenger waiting time and headway regularity, but these gains are validated almost exclusively in simulation environments that assume stationary passenger arrivals, symmetric Gaussian travel times, and a failure-free fleet. The performance of MARL bus-scheduling models has not been characterized when these idealizing assumptions are simultaneously violated by (i) stochastic passenger demand surges, (ii) heavy-tailed weather-induced travel-time delays, and (iii) discrete bus breakdowns. Without this characterization, it cannot be determined whether reported MARL gains persist, degrade gracefully, or collapse under realistic operating disturbances, which in turn blocks the transition of MARL bus scheduling from simulation to real urban transit deployment.
-
 \section{Rationale}
 Urban bus corridors such as the EDSA Carousel handle hundreds of thousands of daily passengers and operate under conditions that routinely violate the assumptions of existing MARL simulations: passenger volumes surge during peak periods and weather events, travel times skew sharply during typhoons and heavy rainfall, and individual buses experience mechanical failures during service. The scale of the corridor makes these disturbances operationally consequential: the EDSA Carousel averaged roughly $1.83\times10^5$ passengers per day in 2025 with single-day peaks exceeding $3.2\times10^5$ \cite{DOTr2025Ridership}, and its operations are suspended outright under elevated tropical-cyclone signals \cite{DOTr2020Suspension}, so weather effects manifest both as heavy-tailed travel-time delays on operating days and as complete service withdrawal on the most severe days. If MARL is to be considered a credible candidate for deployment in such corridors, its performance must be quantified under exactly these disturbances. Reporting wait-time and headway-regularity results only under stationary, idealized conditions overstates expected operational benefit and provides transit operators no basis for risk assessment.
 
@@ -18,9 +15,10 @@ For clarity, a \textit{stochastic environment} in this study models uncertain qu
 
 Addressing the robustness gap is timely because (a) recent MARL bus-control work has explicitly identified robustness under perturbations as the next research priority \cite{Wangsun}, (b) microsimulation tools such as SUMO now support empirical calibration to real corridor data via standard GEH and RMSE metrics \cite{FHWA2019TAT,Patil2025Conformal}, and (c) calibrated stochastic models of weather-induced and demand-driven disturbances are now established in the transportation forecasting literature \cite{Patil2025Conformal}. Together, these make an integrated robustness evaluation feasible that was not previously possible.
 
-\section{Research Objectives}
-\subsection{Main Objective}
-To investigate the performance of a developed Multi-Agent Reinforcement Learning (MARL) scheduling model for dynamic bus scheduling under non-ideal traffic conditions on a calibrated simulation of the EDSA Carousel northbound corridor.
+\section{Research Gap}
+Existing Multi-Agent Reinforcement Learning frameworks for bus scheduling demonstrate measurable improvements in passenger waiting time and headway regularity, but these gains are validated almost exclusively in simulation environments that assume stationary passenger arrivals, symmetric Gaussian travel times, and a failure-free fleet. The performance of MARL bus-scheduling models has not been characterized when these idealizing assumptions are simultaneously violated by (i) stochastic passenger demand surges, (ii) heavy-tailed weather-induced travel-time delays, and (iii) discrete bus breakdowns. Without this characterization, it cannot be determined whether reported MARL gains persist, degrade gracefully, or collapse under realistic operating disturbances, which in turn blocks the transition of MARL bus scheduling from simulation to real urban transit deployment.
+
+
 
 \section{Research Objectives}
 \subsection{Main Objective}
@@ -36,7 +34,7 @@ To investigate the performance of a developed Multi-Agent Reinforcement Learning
         \\
    \item \textbf{Algorithm Implementation:} To develop and implement a Multi-Agent Reinforcement Learning (MARL) approach for dynamic bus scheduling.
         \\
-        \\ \textbf{Expected Output 2.1:} A formulated agent architecture defining individual bus units as agents with discrete state and action space with a continuous reward function that punishes irregularities and passenger service delays.
+        \\ \textbf{Expected Output 2.1:} A formulated    agent architecture defining individual bus units as agents with discrete state and action space with a continuous reward function that punishes irregularities and passenger service delays.
         \\
    \item \textbf{Performance Evaluation Under Ideal and Non-Ideal Conditions:} To evaluate the scheduling performance of the MARL approach under both ideal operating conditions and non-ideal conditions.
         \\
@@ -44,21 +42,12 @@ To investigate the performance of a developed Multi-Agent Reinforcement Learning
         \\
         \\ \textbf{Expected Output 3.2:} A statistical analysis of arrival consistency under ideal conditions, using headway variability to determine the system's effectiveness in maintaining uniform gaps between vehicles.
         \\
-        \\ \textbf{Expected Output 3.3:} A quantitative assessment of passenger waiting time and travel times under non-ideal conditions, measured as degradation relative to the ideal-regime reference established in Expected Output 3.1.
+        \\ \textbf{Expected Output 3.3:} A quantitative assessment of passenger waiting time and travel times under non-ideal conditions, measured as degradation relative to the ideal-conditions performance.
         \\
         \\ \textbf{Expected Output 3.4:} A statistical analysis of the impact of non-ideal conditions, using headway variability to determine the system's effectiveness in maintaining uniform gaps between vehicles under disturbance.
         \\
  \end{enumerate}
 
-% NOTE TO AUTHORS (Instructor 3 comment): One panelist suggested merging SO3 and SO4
-% on the grounds that the non-ideal test only changes the disturbance variables. We have
-% kept them separate by design: SO3 establishes the ideal-regime control baseline (the
-% acceptance criterion vs. Even Headway, Expected Output 3.x), which is the reference point
-% against which SO4 measures degradation and recovery. Merging them would remove the
-% explicit ideal baseline that the degradation metric is computed relative to. If the panel
-% still prefers a merge, SO3 and SO4 can be restated as a single objective with two
-% sub-conditions (ideal / non-ideal) sharing one set of Expected Outputs. This is a
-% structural choice for the authors to make; flagged here rather than changed silently.
 
 \section{Significance of the Study}
 This study contributes both practical and scientific significance.
