@@ -23,7 +23,12 @@
 \usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage{ragged2e}
+\usepackage{totalcount}
 
+\newcommand{\automatedwordcount}{%
+  \immediate\write18{cat introduction.tex problem.tex methods.tex | texcount -1 -sum -q - > word_count.sum}%
+  \input{word_count.sum}%
+}
 
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[hidelinks]{hyperref}
@@ -132,8 +137,9 @@
 % ----------------------------------------------------------------------------------
 % THIS IS THE BEGINNING OF THE MANUSCRIPT PROPER
 % ----------------------------------------------------------------------------------
-
+%TC:ignore
 \begin{document}
+%TC:ignore
 \input{title.tex} % Putting the title page
 
 % ------------------------------- ABSTRACT ---------------------------------
@@ -208,10 +214,12 @@ In conclusion, we are deeply grateful to everyone who has played a part, big or 
 % NOTE: Remove this line for the final, revised manuscript
 
 % --------------------------------------------------------------------------------
-
+%TC:endignore
 \input{introduction.tex}
 \input{problem.tex}
 \input{methods.tex}
+
+
 %\input{results.tex}
 %\input{discussion.tex}
 %\input{futurework.tex}
