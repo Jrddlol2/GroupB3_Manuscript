@@ -23,6 +23,16 @@ SUMO is used for the calibration layer because it integrates with Python via the
 
 A pure-Python alternative without SUMO calibration was also considered but rejected: it would lack the empirically grounded per-segment travel-time distributions that the GEH-and-RMSE-calibrated SUMO model provides. The chosen approach uses each tool where it is strongest: SUMO for calibrated microscopic realism during the one-time calibration phase, and Python for fast event-driven Monte Carlo during training and evaluation. This keeps the experiment tractable on accessible hardware, including a single cloud-notebook GPU runtime. Rodriguez et al.~\cite{Rodriguez2023Cooperative} and Wang and Sun~\cite{Wangsun} adopt the same two-layer approach, using event-based custom simulators with calibration parameters supplied from empirical data.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/fig_3_1_pipeline (2).pdf}
+    \caption[Two-phase simulation pipeline]{The two-phase simulation architecture.}
+    \label{fig:pipeline}
+\end{figure}
+
+
+
+
 The pipeline proceeds in two phases. First, SUMO is calibrated against empirical bus data, and the resulting per-segment travel time, demand, and dwell time distributions are saved. Second, the Python environment loads these distributions and runs a lightweight event-based bus simulator for MARL training and evaluation. Because the Python environment draws from distributions extracted from the calibrated SUMO model, its statistical behavior matches SUMO at the level of per-segment travel time, demand, and dwell time. It does not reproduce SUMO's microscopic vehicle-to-vehicle interactions, but those interactions affect the reward function only through their aggregate effect on inter-stop bus travel time, which the calibrated distributions already capture. Rodriguez et al.~\cite{Rodriguez2023Cooperative} make the same argument: they trained in an event-based mesoscopic simulator parameterized by empirical corridor data.
 
 \subsection{Control-Stop Selection}
@@ -361,6 +371,15 @@ The protocol is split into a training phase and an execution (evaluation) phase:
 \item \textbf{Decentralized execution phase.} The trained network's weights are frozen. During Monte Carlo evaluation (Stages A and B), each bus acts independently and greedily on its own local observation $s_{i,t}$ alone, with no centralized controller and no further weight updates. The fixed policy is evaluated across both the ideal condition (Stage A) and the swept non-ideal condition (Stage B), so that its behavior is measured on disturbance realizations it did not see during training but which are drawn from the same generative process.
 \end{itemize}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig_3_2_aec_training.pdf}
+    \caption[Agent--environment cycle (training)]{The asynchronous agent--environment 
+    cycle during training.}
+    \label{fig:aec-training}
+\end{figure}
+ 
+
 Because heavy-tailed returns can destabilize value-based learning if injected without safeguards \cite{Henderson2018Matters,Agarwal2021Precipice}, training under disturbance is paired with the stabilizers discussed in Section~\ref{sec:challenges}: DDQN's double estimator, reward clipping, and slow target-network updates. If training under the full disturbance set proves unstable at the highest intensities despite these measures, a curriculum that ramps disturbance intensity over the course of training~\cite{Tang2024Curriculum} is retained as a fallback.
 
 \subsection{Baseline Controllers for Comparison}
@@ -416,6 +435,12 @@ For non-ideal disturbance levels, performance degradation is computed as the per
 
 \textbf{Stage B: Non-ideal-condition evaluation.} The trained MARL policy and the three baselines are evaluated across the swept disturbance range $\eta \in \{0.3, 0.6, 1.0, 1.3\}$, with the breakdown generator active at each level. For each $(\eta, \text{controller})$ cell, $N \geq 30$ Monte Carlo iterations are run with matched seeds. Reported outputs are: (a) mean waiting time, travel time, and headway CV as functions of $\eta$ for each controller; (b) percentage degradation at each $\eta$ relative to the controller's own ideal-condition result; (c) the disturbance level at which MARL's advantage over the best-performing baseline becomes statistically significant; and (d) the degradation slope, defined as the rate of waiting-time increase per unit increase in $\eta$, with smaller slopes indicating greater resilience. An ablation is also run with each disturbance enabled alone (demand-only, weather-only, breakdown-only) at $\eta = 1.0$ to attribute degradation to disturbance type. The MARL policy is reported as performing well under disturbance if its mean waiting time stays below that of the best-performing baseline across the full sweep, with statistical significance under the same correction.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/fig_3_2b_aec_evaluation.pdf}
+    \caption[Monte Carlo evaluation layer]{The Monte Carlo evaluation layer.}
+    \label{fig:aec-eval}
+\end{figure}
 
 \section{Methodological Challenges}
 \label{sec:challenges}
