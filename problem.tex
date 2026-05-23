@@ -1,7 +1,7 @@
 \chapter{Problem Statement}
 
 \section{Rationale}
- The public transportation system has long been a commodity that comes in the form of bus transport, train networks, and the like, with predetermined routes and fares \cite{Tironi2018}. In Metro Manila, traffic congestion has long been a problem stemming from insufficient road infrastructure and poor traffic mitigation policies, resulting in an inefficient public transport system \cite{Spatio2026}. One of the government's actions for an alternative transportation system that runs within the metropolitan area is the implementation of the EDSA Carousel in 2020. It is the only busway system in Metro Manila implemented by the government to have a designated lane, separated from other vehicles by concrete barriers \cite{Chua2026}. Over the years, the number of commuters using the EDSA Carousel has steadily risen, averaging approximately $1.83\times10^5$ daily passengers, with single-day peaks exceeding $3.2\times10^5$ during high-demand periods, reaching a new high of nearly 67 million in 2025, up from 63.02 million in 2024 \cite{DOTr2025Ridership}. However, despite its growing demand, the system still faces several problems that can affect the quality of bus routing. To start, the LTFRB relied on a tedious manual monitoring process by deploying personnel at each stop \cite{EDSApolicy2023}. There are also certain portions where it operates with mixed traffic, causing delays among buses. It is also clear that bus bunching has not been resolved; most of the time, their designated dispatch schedule is not followed \cite{MicrosimModel2024}. Moreover, the operation of the bus system is also largely influenced by external factors, such as weather and road maintenance. Sections of the EDSA Bus Carousel routes typically close during tropical cyclones to prevent potential damage from continuous rain and strong winds \cite{DOTr2020Suspension}. Given these operational issues, the bus dispatching process of the EDSA Bus Carousel can be modeled as a Vehicle Scheduling Problem (VSP), in which buses must be dispatched and coordinated efficiently despite these issues. By improving the scheduling, operational issues, such as bus bunching, irregular dispatch intervals, and passenger waiting times, will be reduced, thereby improving the overall bus dispatch efficiency.
+The public transportation system has long been a commodity that comes in the form of bus transport, train networks, and the like, with predetermined routes and fares \cite{Tironi2018}. In Metro Manila, traffic congestion has long been a problem stemming from insufficient road infrastructure and poor traffic mitigation policies, resulting in an inefficient public transport system \cite{Spatio2026}. One of the government's actions for an alternative transportation system that runs within the metropolitan area is the implementation of the EDSA Carousel in 2020. It is the only busway system in Metro Manila implemented by the government to have a designated lane, separated from other vehicles by concrete barriers \cite{Chua2026}. Over the years, the number of commuters using the EDSA Carousel has steadily risen, averaging approximately $1.83\times10^5$ daily passengers, with single-day peaks exceeding $3.2\times10^5$ during high-demand periods, reaching a new high of nearly 67 million in 2025, up from 63.02 million in 2024 \cite{DOTr2025Ridership}. However, despite its growing demand, the system still faces several problems that can affect the quality of bus routing. To start, the LTFRB relied on a tedious manual monitoring process by deploying personnel at each stop \cite{EDSApolicy2023}. There are also certain portions where it operates with mixed traffic, causing delays among buses. It is also clear that bus bunching has not been resolved; most of the time, their designated dispatch schedule is not followed \cite{MicrosimModel2024}. Moreover, the operation of the bus system is also largely influenced by external factors, such as weather and road maintenance. Sections of the EDSA Bus Carousel routes typically close during tropical cyclones to prevent potential damage from continuous rain and strong winds \cite{DOTr2020Suspension}. Given these operational issues, the bus dispatching process of the EDSA Bus Carousel can be modeled as a Vehicle Scheduling Problem (VSP), in which buses must be dispatched and coordinated efficiently despite these issues. By improving the scheduling, operational issues, such as bus bunching, irregular dispatch intervals, and passenger waiting times, will be reduced, thereby improving the overall bus dispatch efficiency.
 
 Busway systems operate in a highly dynamic, unpredictable environment. In the past, Vehicle Scheduling Problems (VSP) relied on traditional scheduling techniques that focused on finding the optimal path by determining the shortest distance. Static scheduling is the pre-computed timetabling that fixes departure times before operation begins, with no mechanism to revise them in response to real-time conditions \cite{Ju2023Joint,Cao2022Train,Nie2025CMRM}. However, because transit environments are inherently stochastic, these static schedules perform poorly during daily operations, which causes severe operational issues such as bus bunching, node failures, and an increase in passenger wait times \cite{Daganzo2009,FEMbusbunching}.
 
@@ -21,23 +21,21 @@ To investigate the performance of a developed Multi-Agent Reinforcement Learning
 \subsection{Specific Objectives}
 \begin{enumerate}
    \item \textbf{Environment Construction:} To construct a stochastic traffic simulation environment representing a defined traffic area.
-        \\
-        \\ \textbf{Expected Output 1.1:} A simulation model of a defined operational scope, validated against empirical traffic data to establish an environment that accurately approximates real-world traffic.
-        \\
-        \\ \textbf{Expected Output 1.2:} An environment simulator capable of introducing environmental variability through adjustable parameters to simulate non-ideal operating conditions.
-        \\
+
+   \textbf{Expected Output 1.1:} A simulation model of a defined operational scope, validated against empirical traffic data to establish an environment that accurately approximates real-world traffic.
+
+   \textbf{Expected Output 1.2:} An environment simulator capable of introducing environmental variability through adjustable parameters to simulate non-ideal operating conditions.
+
    \item \textbf{Algorithm Implementation:} To develop and implement a Multi-Agent Reinforcement Learning (MARL) approach for dynamic bus scheduling.
-        \\
-        \\ \textbf{Expected Output 2.1:} A formulated    agent architecture defining individual bus units as agents with discrete state and action space with a continuous reward function that punishes irregularities and passenger service delays.
-        \\
+
+   \textbf{Expected Output 2.1:} A formulated agent architecture defining individual bus units as agents with discrete state and action space with a continuous reward function that punishes irregularities and passenger service delays.
+\pagebreak
    \item \textbf{Performance Evaluation Under Ideal and Non-Ideal Conditions:} To evaluate the scheduling performance of the MARL approach under both ideal operating conditions and non-ideal conditions.
-        \\
-        \\ \textbf{Expected Output 3.1:} A quantitative and statistical assessment of MARL scheduling performance under ideal conditions, measuring passenger waiting time, travel time, and headway coefficient of variation, tested against baseline methods.
-        \\
-        \\ \textbf{Expected Output 3.2:} A quantitative and statistical assessment of MARL scheduling performance under non-ideal conditions, measuring passenger waiting time, travel time, and headway coefficient of variation, reported as degradation relative to ideal-conditions performance.
-        \\
-       
- \end{enumerate}
+
+   \textbf{Expected Output 3.1:} A quantitative and statistical assessment of MARL scheduling performance under ideal conditions, measuring passenger waiting time, travel time, and headway coefficient of variation, tested against baseline methods.
+
+   \textbf{Expected Output 3.2:} A quantitative and statistical assessment of MARL scheduling performance under non-ideal conditions, measuring passenger waiting time, travel time, and headway coefficient of variation, reported as degradation relative to ideal-conditions performance.
+\end{enumerate}
 
 
 \section{Significance of the Study}
