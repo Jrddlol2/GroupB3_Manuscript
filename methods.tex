@@ -244,7 +244,7 @@ The Poisson assumption is a tractable approximation for the single-day simulatio
 
 \subsection{MARL Architecture and MDP Formulation}
 
-This subsection builds the formal learning framework in two steps. It first introduces the Bellman recursion that underlies value-based reinforcement learning, then specifies the Markov game tuple, the per-agent observation and action spaces, the reward-function design, and the proposed learning algorithm. The justification for choosing a multi-agent formulation over a single-agent alternative is presented in Chapter~2.
+This subsection builds the formal learning framework in two steps. It first introduces the Bellman recursion that underlies value-based reinforcement learning, then specifies the Markov game tuple, the per-agent observation and action spaces, the reward-function design, and the proposed learning algorithm. The justification for choosing a multi-agent formulation over a single-agent alternative is presented in Chapter~1.
 
 \subsubsection{Bellman Foundation}
 
@@ -313,9 +313,10 @@ R_i = \mathbb{E}\!\left[\sum_{k=0}^{\infty} e^{-\beta t_k}\, r_{i, t+k}\right],
 
 where $t_k$ is the elapsed time to the $k$-th future control event, consistent with the event-based discount introduced earlier.
 
-The \textbf{structure} of the per-event reward $r_{i, t+k}$ its component terms and the operational priorities they encode — is defined in this chapter. Its \textbf{exact weighting and sensitivity analysis} are a research objective of this study (Specific Objective 2, Expected Outputn 2.1), to be finalized during implementation rather than inherited from prior work. This separation is deliberate: the reward \textit{form} is grounded here, while the tuning of its coefficients is treated as an empirical question. The reward formulation must balance three competing operational priorities: (i) headway regularity, since bunching is the primary failure mode of bus corridors; (ii) passenger waiting time at served stops, which is the most direct passenger-experience metric; and (iii) a penalty term that discourages degenerate skipping behavior, since an unconstrained skip action could otherwise reduce headway variance by refusing to serve passengers. Existing MARL bus-control reward formulations span a range of trade-offs among these priorities, from headway-coefficient-of-variation forms for holding-only action spaces \cite{Wangsun,Wang2023MultiObj} to passenger-time forms for combined holding-and-skipping action spaces \cite{Rodriguez2023Cooperative}. This study defines the reward \textit{structure} for the hybrid action space, the three component terms above, and treats their relative weighting, plus a sensitivity analysis over those weights, as the implementation-phase deliverable (EO 2.1). The component structure is fixed; the coefficients are not yet finalized.
+The \textbf{structure} of the per-event reward $r_{i, t+k}$ its component terms and the operational priorities they encode — is defined in this chapter. Its \textbf{exact weighting and sensitivity analysis} are a research objective of this study (Specific Objective 2, Expected Output 2.1), to be finalized during implementation rather than inherited from prior work. This separation is deliberate: the reward \textit{form} is grounded here, while the tuning of its coefficients is treated as an empirical question. The reward formulation must balance three competing operational priorities: (i) headway regularity, since bunching is the primary failure mode of bus corridors; (ii) passenger waiting time at served stops, which is the most direct passenger-experience metric; and (iii) a penalty term that discourages degenerate skipping behavior, since an unconstrained skip action could otherwise reduce headway variance by refusing to serve passengers. Existing MARL bus-control reward formulations span a range of trade-offs among these priorities, from headway-coefficient-of-variation forms for holding-only action spaces \cite{Wangsun,Wang2023MultiObj} to passenger-time forms for combined holding-and-skipping action spaces \cite{Rodriguez2023Cooperative}. This study defines the reward \textit{structure} for the hybrid action space, the three component terms above, and treats their relative weighting, plus a sensitivity analysis over those weights, as the implementation-phase deliverable (EO 2.1). The component structure is fixed; the coefficients are not yet finalized.
 
 \subsubsection{Proposed Learning Algorithm}
+\label{subsec:proposed-algorithm}
 
 The fully discrete action space ($|A_i| = 10$) makes value-based learning a natural fit. This study adopts \textbf{Double Deep Q-Network (DDQN)~\cite{vanHasselt2016DDQN} with parameter sharing under centralized training and decentralized execution (CTDE)}. CTDE means the policy is trained with access to information from all agents but each bus acts on its own local observation alone at deployment, so the trained system does not require a centralized real-time controller. The choice follows Rodriguez et al.~\cite{Rodriguez2023Cooperative}, who used the same DDQN-based framework for cooperative holding-and-skipping control on a comparable corridor.
 
@@ -373,7 +374,7 @@ The protocol is split into a training phase and an execution (evaluation) phase:
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{fig_3_2_aec_training.pdf}
+    \includegraphics[width=\textwidth]{Figures/fig_3_2_aec_training.pdf}
     \caption[Agent--environment cycle (training)]{The asynchronous agent--environment 
     cycle during training.}
     \label{fig:aec-training}
