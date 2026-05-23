@@ -19,9 +19,6 @@ The study uses a two-stage simulation architecture. \textbf{SUMO} (Simulation of
 
 PettingZoo's AEC API is chosen over three alternatives. First, the single-agent Gymnasium interface~\cite{Towers2024Gymnasium} cannot natively represent multiple agents acting on independent events. Fitting multi-agent control into a single-agent API requires either treating the entire fleet as one composite agent, which breaks parameter sharing, or coordinating agents manually outside the API, which removes the benefit of using a standard interface. Second, PettingZoo's parallel API assumes all agents step simultaneously~\cite{Terry2021PettingZoo}, which does not match asynchronous bus control where only the bus arriving at a control stop has a decision to make. Third, a fully custom implementation was considered but rejected because it would sacrifice compatibility with established algorithm libraries and complicate reproducibility. AEC handles the asynchronous case by cycling through one agent at a time rather than stepping all agents in parallel~\cite{Terry2021PettingZoo}. This matches the approach used by Wang and Sun~\cite{Wangsun} and Rodriguez et al.~\cite{Rodriguez2023Cooperative}, both of whom implemented the same asynchronous logic in custom event-driven simulators. Adopting AEC preserves their event-driven dynamics while providing a standardized interface compatible with parameter-sharing algorithm libraries.
 
-SUMO is used for the calibration layer because it integrates with Python via the Traffic Control Interface (TraCI) and supports the GEH and RMSE validation protocols described later in this section. Ollero et al.~\cite{Ollero2024EDSA} previously developed an AIMSUN microsimulation of the EDSA Busway corridor; this study implements an equivalent network in SUMO to take advantage of its open-source TraCI interface, while adopting the same calibration targets.
-
-
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{Figures/fig_3_1_pipeline (2).pdf}
@@ -29,12 +26,15 @@ SUMO is used for the calibration layer because it integrates with Python via the
     \label{fig:pipeline}
 \end{figure}
 
+SUMO is used for the calibration layer because it integrates with Python via the Traffic Control Interface (TraCI) and supports the GEH and RMSE validation protocols described later in this section. Ollero et al.~\cite{Ollero2024EDSA} previously developed an AIMSUN microsimulation of the EDSA Busway corridor; this study implements an equivalent network in SUMO to take advantage of its open-source TraCI interface, while adopting the same calibration targets.
+
+
 A pure-Python alternative without SUMO calibration was also considered but rejected: it would lack the empirically grounded per-segment travel-time distributions that the GEH-and-RMSE-calibrated SUMO model provides. The chosen approach uses each tool where it is strongest: SUMO for calibrated microscopic realism during the one-time calibration phase, and Python for fast event-driven Monte Carlo during training and evaluation. This keeps the experiment tractable on accessible hardware, including a single cloud-notebook GPU runtime. Rodriguez et al.~\cite{Rodriguez2023Cooperative} and Wang and Sun~\cite{Wangsun} adopt the same two-layer approach, using event-based custom simulators with calibration parameters supplied from empirical data.
 
 
 
 The pipeline proceeds in two phases. First, SUMO is calibrated against empirical bus data, and the resulting per-segment travel time, demand, and dwell time distributions are saved. Second, the Python environment loads these distributions and runs a lightweight event-based bus simulator for MARL training and evaluation. Because the Python environment draws from distributions extracted from the calibrated SUMO model, its statistical behavior matches SUMO at the level of per-segment travel time, demand, and dwell time. It does not reproduce SUMO's microscopic vehicle-to-vehicle interactions, but those interactions affect the reward function only through their aggregate effect on inter-stop bus travel time, which the calibrated distributions already capture. Rodriguez et al.~\cite{Rodriguez2023Cooperative} make the same argument: they trained in an event-based mesoscopic simulator parameterized by empirical corridor data.
-\pagebreak
+
 \subsection{Control-Stop Selection}
 
 The study operates on a sub-corridor of the EDSA Carousel route. Within the chosen sub-corridor, only a subset of stops is designated as \textit{control stops} where MARL agents are permitted to act; the remainder are non-control stops that contribute stochastic dwell and delay behavior without agent intervention. Control stops are selected according to four criteria, following Rodriguez et al.~\cite{Rodriguez2023Cooperative} and the minimal-intervention principle of Wang and Sun~\cite{Wangsun}:
@@ -241,6 +241,7 @@ Unlike the continuous perturbations above, a bus breakdown is a \textit{discrete
 A breakdown does not override any agent's policy; it changes the \textbf{state} the surviving agents observe and the \textbf{reward landscape} they face. The removal of $b_k$ is encoded in the downstream incident/breakdown flag of the trailing agent's observation (Section~\ref{subsec:state-space}), and the inherited residual demand sharply raises the headway-irregularity and dwell-time penalties that the trailing agent's reward already captures. Under these conditions, the stop-skipping action, which is part of the agent's normal action space (Section~\ref{subsec:action-space}) becomes strongly advantageous. Skipping a heavily loaded downstream stop lets $b_{k-1}$ shed onboard passengers (alighting permitted, boarding suppressed) and close the gap to $b_{k+1}$ before bunching sets in. The environment therefore \textit{induces} the recovery behavior through the state and reward signal, and the agent must \textit{learn} to select it; the action is never injected by the environment. This keeps the breakdown response consistent with decentralized execution and the Markov-game formulation, in which every action originates from $\pi_\theta$.
 
 The Poisson assumption is a tractable approximation for the single-day simulation horizon, over which vehicle age, maintenance schedule, and mileage since last service can be treated as constant.
+\clearpage
 
 \subsection{MARL Architecture and MDP Formulation}
 
@@ -256,7 +257,7 @@ Q^*(s, a) = \mathbb{E} \left[ r(s, a) + \gamma \max_{a'} Q^*(s', a') \mid s, a \
 \end{equation}
 
 where $s'$ is the state reached after applying action $a$, $r(s,a)$ is the immediate reward, and $\gamma \in [0, 1)$ is the discount factor. This equation is relevant here for two reasons. First, it shows that a long-horizon control policy can be learned by recursively backing up local one-step rewards, making it computationally feasible to evaluate the downstream effects of a holding or skipping decision without enumerating every future stop on the route. Second, in the asynchronous bus-control setting, the time between two consecutive control events is itself random. Following Bradtke and Duff~\cite{Bradtke1995}, the discount factor in Eq.~\eqref{eq:bellman} is replaced by an event-based discount $e^{-\beta t}$ that scales with the elapsed time between events. Each agent's learning target is therefore an event-adjusted version of Eq.~\eqref{eq:bellman}, not a fixed-tick MDP target. By convention throughout this chapter, $\gamma$ denotes the nominal discount factor as it appears in the canonical Bellman and DDQN equations, while $e^{-\beta t}$ is the event-based discount actually applied in the asynchronous setting; wherever $\gamma$ appears in a value-function equation, it is instantiated by $e^{-\beta t}$ at runtime.
-\pagebreak
+
 
 \subsubsection{Markov Game Formulation}
 
@@ -300,7 +301,7 @@ The agent's action $a_{i,t} = \pi_\theta(s_{i,t})$ combines two discrete compone
 \end{itemize}
 
 The full action set is the Cartesian product of these two components: $|A_i| = 5 \times 2 = 10$ discrete actions per control event. A continuous holding parameter $\alpha \in [0, 1]$ was considered, following Wang and Sun~\cite{Wangsun}, but rejected for three reasons. First, continuous actions require actor-critic algorithms, whose training instability compounds across the swept-disturbance evaluation budget. Second, Rodriguez et al.~\cite{Rodriguez2023Cooperative} showed that a 5-bin discretization of $\alpha$ achieves combined holding-and-skipping control on a comparable corridor without measurable loss of performance versus continuous formulations. Third, real driver compliance with second-level holding instructions is itself coarse \cite{Rodriguez2023Cooperative}, so continuous precision in $\alpha$ is not meaningful at deployment.
-
+\clearpage
 \subsubsection{Reward Function ($R$) and Objective}
 \label{subsec:reward}
 
@@ -389,6 +390,7 @@ The MARL policy is benchmarked against three baseline controllers: \textbf{No Co
 \subsubsection{No Control (NC)}
 
 No holding or skipping is applied. Each bus dwells only for the time required to serve boarding and alighting passengers, then departs immediately. NC serves as the lower bound of the comparison: it isolates the natural corridor behavior without any regularization. If MARL cannot beat NC, the controller is doing more harm than good. NC also provides the reference point for measuring the severity of bus bunching.
+\clearpage
 
 \subsubsection{Forward Headway (FH)}
 
